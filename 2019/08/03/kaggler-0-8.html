@@ -1,0 +1,26 @@
+<h1 id="kaggler-080-release">Kaggler 0.8.0 Release</h1>
+
+<p><a href="https://github.com/jeongyoonlee/Kaggler">Kaggler</a> 0.8.0 is released. It added <code class="language-plaintext highlighter-rouge">model.BaseAutoML</code> and <code class="language-plaintext highlighter-rouge">model.AutoLGB</code> for automatic feature selection and hyper-parameter tuning using <code class="language-plaintext highlighter-rouge">hyperopt</code>.</p>
+
+<p>The implementation is based on <a href="https://github.com/jeongyoonlee/kddcup2019track2">the solution of the team AvengersEnsmbl</a> at the KDD Cup 2019 Auto ML track. Details and winners’ solutions at the competition are available at <a href="https://www.4paradigm.com/competition/kddcup2019">the competition website</a>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">model.BaseAutoML</code> is the base class, from which you can inherit to implement your own auto ML class. <code class="language-plaintext highlighter-rouge">model.AutoLGB</code> is the auto ML class for LightGBM. It’s simple to use as follows:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">kaggler.model</span> <span class="kn">import</span> <span class="n">AutoLGB</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">AutoLGB</span><span class="p">(</span><span class="n">objective</span><span class="o">=</span><span class="s">'binary'</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s">'auc'</span><span class="p">)</span>
+<span class="n">model</span><span class="p">.</span><span class="n">tune</span><span class="p">(</span><span class="n">X_trn</span><span class="p">,</span> <span class="n">y_trn</span><span class="p">)</span>
+<span class="n">model</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_trn</span><span class="p">,</span> <span class="n">y_trn</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_tst</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Other updates include:</p>
+
+<ul>
+  <li>Add <code class="language-plaintext highlighter-rouge">.travis.yml</code> for Travis CI</li>
+  <li>Add tests with <code class="language-plaintext highlighter-rouge">pytest</code></li>
+  <li>Use <code class="language-plaintext highlighter-rouge">flake8</code> linting</li>
+  <li>Fix the macOS installation issue (<a href="https://github.com/jeongyoonlee/Kaggler/issues/34">#34</a>)</li>
+  <li>For more details, please check out the <a href="https://kaggler.readthedocs.io/en/latest/index.html">documentation</a> and <a href="https://github.com/jeongyoonlee/Kaggler">repository</a>.</li>
+</ul>
+
+<p>Any comments or contributions will be appreciated.</p>

@@ -1,0 +1,219 @@
+<h1 id="kaggler-pipeline-for-data-science-competitions">Kaggler Pipeline for Data Science Competitions</h1>
+
+<p>In this blog, we are going to go over the fundementals of the <a href="https://github.com/kaggler-tv/kaggler-template">Kaggler repository</a>, a machine learning pipeline for data science competitions. The Kaggler pipeline uses Makefiles and Python scripts to coordinate dependencies, and allows quick iteration of new features and models. You can watch the demo at <a href="https://www.youtube.com/watch?v=861NAO5-XJo&amp;feature=youtu.be">Kaggler TV Episode #4</a>.</p>
+
+<p>The pipeline is driven by running a model training, such as logistic regression, using the corresponding Makefile, e.g.,<br />
+<code class="language-plaintext highlighter-rouge">$make -f Makefile.logreg1</code>. Before going into the details of a model run, let’s build our data and features from bottom up. To start, we need to initialize our repo by going to the <a href="https://github.com/kaggler-tv/kaggler-template">Kaggler repository</a> and clicking <strong>use this template</strong>
+ to name and create our repository, e.g., <strong>cat-in-the-dat-ii</strong>. Next, clone the repository by</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> $git clone https://github.com/YOUR_GITHUB_ID/cat-in-the-dat-ii.git
+ $cd cat-in-the-dat-ii
+</code></pre></div></div>
+
+<h2 id="data">Data</h2>
+<p>The file <a href="https://github.com/kaggler-tv/cat-in-the-dat-ii/blob/master/Makefile"><strong><em><code class="language-plaintext highlighter-rouge">Makefile</code></em></strong></a> defines the directories and the structure of the pipeline.</p>
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># XXX: competition name
+</span><span class="nv">COMPETITION</span> <span class="o">:=</span> cat-in-the-dat-ii
+
+<span class="c"># gsed on macOS. sed on LINUX
+</span><span class="nv">SED</span> <span class="o">:=</span> gsed
+
+<span class="c"># directories
+</span><span class="nv">DIR_DATA</span> <span class="o">:=</span> input
+<span class="nv">DIR_BUILD</span> <span class="o">:=</span> build
+<span class="nv">DIR_FEATURE</span> <span class="o">:=</span> <span class="nv">$(DIR_BUILD)</span>/feature
+<span class="nv">DIR_METRIC</span> <span class="o">:=</span> <span class="nv">$(DIR_BUILD)</span>/metric
+<span class="nv">DIR_MODEL</span> <span class="o">:=</span> <span class="nv">$(DIR_BUILD)</span>/model
+
+<span class="c"># directories for the cross validation and ensembling
+</span><span class="nv">DIR_VAL</span> <span class="o">:=</span> <span class="nv">$(DIR_BUILD)</span>/val
+<span class="nv">DIR_TST</span> <span class="o">:=</span> <span class="nv">$(DIR_BUILD)</span>/tst
+<span class="nv">DIR_SUB</span> <span class="o">:=</span> <span class="nv">$(DIR_BUILD)</span>/sub
+
+<span class="nv">DIRS</span> <span class="o">:=</span> <span class="nv">$(DIR_DATA)</span> <span class="nv">$(DIR_BUILD)</span> <span class="nv">$(DIR_FEATURE)</span> <span class="nv">$(DIR_METRIC)</span> <span class="nv">$(DIR_MODEL)</span> <span class="se">\</span>
+        <span class="nv">$(DIR_VAL)</span> <span class="nv">$(DIR_TST)</span> <span class="nv">$(DIR_SUB)</span>
+
+<span class="c"># data files for training and predict
+</span><span class="nv">DATA_TRN</span> <span class="o">:=</span> <span class="nv">$(DIR_DATA)</span>/train.csv
+<span class="nv">DATA_TST</span> <span class="o">:=</span> <span class="nv">$(DIR_DATA)</span>/test.csv
+<span class="nv">SAMPLE_SUBMISSION</span> <span class="o">:=</span> <span class="nv">$(DIR_DATA)</span>/sample_submission.csv
+
+<span class="nv">LABEL_IDX</span> <span class="o">=</span> 25
+
+<span class="nv">ID_TST</span> <span class="o">:=</span> <span class="nv">$(DIR_DATA)</span>/id.tst.csv
+<span class="nv">HEADER</span> <span class="o">:=</span> <span class="nv">$(DIR_DATA)</span>/header.csv
+
+<span class="nv">Y_TRN</span><span class="o">:=</span> <span class="nv">$(DIR_FEATURE)</span>/y.trn.txt
+<span class="nv">Y_TST</span><span class="o">:=</span> <span class="nv">$(DIR_FEATURE)</span>/y.tst.txt
+
+<span class="nl">data</span><span class="o">:</span> <span class="nf">$(DATA_TRN) $(DATA_TST) $(SAMPLE_SUBMISSION)</span>
+
+<span class="nl">$(DIRS)</span><span class="o">:</span>
+        <span class="err">mkdir</span> <span class="err">-p</span> <span class="err">$@</span>
+
+<span class="nl">$(DATA_TRN) $(DATA_TST) $(SAMPLE_SUBMISSION)</span><span class="o">:</span> <span class="nf">| $(DIR_DATA)</span>
+        <span class="err">kaggle</span> <span class="err">competitions</span> <span class="err">download</span> <span class="err">-c</span> <span class="err">$(COMPETITION)</span> <span class="err">-p</span> <span class="err">$(DIR_DATA)</span>
+        <span class="err">find</span> <span class="err">.</span> <span class="err">-name</span> <span class="s2">"*.zip"</span> <span class="err">-exec</span> <span class="err">sh</span> <span class="err">-c</span> <span class="s1">'unzip -d `dirname {}` {}'</span> <span class="s1">';'</span>
+
+<span class="nl">$(HEADER)</span><span class="o">:</span> <span class="nf">$(SAMPLE_SUBMISSION)</span>
+        <span class="err">head</span> <span class="err">-1</span> <span class="err">$&lt;</span> <span class="err">&gt;</span> <span class="err">$@</span>
+
+<span class="nl">$(ID_TST)</span><span class="o">:</span> <span class="nf">$(SAMPLE_SUBMISSION)</span>
+        <span class="err">cut</span> <span class="err">-d,</span> <span class="err">-f1</span> <span class="err">$&lt;</span> <span class="err">|</span> <span class="err">tail</span> <span class="err">-n</span> <span class="err">+2</span> <span class="err">&gt;</span> <span class="err">$@</span>
+
+<span class="nl">$(Y_TST)</span><span class="o">:</span> <span class="nf">$(SAMPLE_SUBMISSION) | $(DIR_FEATURE)</span>
+        <span class="err">cut</span> <span class="err">-d,</span> <span class="err">-f2</span> <span class="err">$&lt;</span> <span class="err">|</span> <span class="err">tail</span> <span class="err">-n</span> <span class="err">+2</span> <span class="err">&gt;</span> <span class="err">$@</span>
+
+<span class="nl">$(Y_TRN)</span><span class="o">:</span> <span class="nf">$(DATA_TRN) | $(DIR_FEATURE)</span>
+        <span class="err">cut</span> <span class="err">-d,</span> <span class="err">-f$(LABEL_IDX)</span> <span class="err">$&lt;</span> <span class="err">|</span> <span class="err">tail</span> <span class="err">-n</span> <span class="err">+2</span> <span class="err">&gt;</span> <span class="err">$@</span>
+
+<span class="c"># cleanup
+</span><span class="nl">clean</span><span class="o">::</span>
+        <span class="err">find</span> <span class="err">.</span> <span class="err">-name</span> <span class="s1">'*.pyc'</span> <span class="err">-delete</span>
+
+<span class="nl">clobber</span><span class="o">:</span> <span class="nf">clean</span>
+        <span class="err">-rm</span> <span class="err">-rf</span> <span class="err">$(DIR_DATA)</span> <span class="err">$(DIR_BUILD)</span>
+
+<span class="nl">.PHONY</span><span class="o">:</span> <span class="nf">clean clobber mac.setup ubuntu.setup apt.setup pip.setup</span>
+
+</code></pre></div></div>
+<p>First, we need to define the name of the competition in <strong><em><code class="language-plaintext highlighter-rouge">Makefile</code></em></strong>. After that, running <code class="language-plaintext highlighter-rouge">$make data</code> will download the specified competition data from Kaggle into the <strong>./input</strong> directory. You need to install the <a href="https://github.com/Kaggle/kaggle-api">Kaggle API</a>, and accept the competition rules on Kaggle to be able to download the data. If you do not download the data manually at this time, the pipeline will automatically start the download when running the first model training. The parameters defined in <strong><em><code class="language-plaintext highlighter-rouge">Makefile</code></em></strong> are as follows.</p>
+
+<p><code class="language-plaintext highlighter-rouge">$DIR_DATA</code> is the directory for the input data.</p>
+
+<p><code class="language-plaintext highlighter-rouge">$DIR_TRN</code>, <code class="language-plaintext highlighter-rouge">$DIR_TST</code>, and <code class="language-plaintext highlighter-rouge">$SAMPLE_SUBMISSION</code> are the downloaded train, test and sample submission files.</p>
+
+<p><code class="language-plaintext highlighter-rouge">LABEL_IDX</code> is the column index of the <em>target</em> variable in the train file, and needs to be specified.</p>
+
+<p><code class="language-plaintext highlighter-rouge">$Y_TRN</code> is the file containing the target labels, and it is created automatically by the pipeline.</p>
+
+<p><code class="language-plaintext highlighter-rouge">$HEADER</code> and <code class="language-plaintext highlighter-rouge">$ID_TST</code> are also created by the pipeline, and are used to build submission files.</p>
+
+<h2 id="feature-engineering">Feature Engineering</h2>
+<p>Let’s create our first feature by one hot encoding all the categorical columns <sup id="fnref:5" role="doc-noteref"><a href="#fn:5" class="footnote" rel="footnote">1</a></sup>. All the columns in this competition are categorical. The feature engieering for a specific feature are defined in files <strong>./src/generate_$FEATURE_NAME.py</strong>, e.g., <a href="https://github.com/kaggler-tv/cat-in-the-dat-ii/blob/master/src/generate_e1.py"><strong>./src/generate_e1.py</strong></a>. We also need to create a makefile correponding to this feature, <strong>Makefile.feature.e1</strong> as follows.</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#--------------------------------------------------------------------------
+# e1: all OHE'd features 
+#--------------------------------------------------------------------------
+</span><span class="k">include</span><span class="sx"> Makefile</span>
+
+<span class="nv">FEATURE_NAME</span> <span class="o">:=</span> e1
+
+<span class="nv">FEATURE_TRN</span> <span class="o">:=</span> <span class="nv">$(DIR_FEATURE)</span>/<span class="nv">$(FEATURE_NAME)</span>.trn.sps
+<span class="nv">FEATURE_TST</span> <span class="o">:=</span> <span class="nv">$(DIR_FEATURE)</span>/<span class="nv">$(FEATURE_NAME)</span>.tst.sps
+<span class="nv">FEATURE_MAP</span> <span class="o">:=</span> <span class="nv">$(DIR_FEATURE)</span>/<span class="nv">$(FEATURE_NAME)</span>.fmap
+
+<span class="nl">$(FEATURE_TRN) $(FEATURE_TST) $(FEATURE_MAP)</span><span class="o">:</span> <span class="nf">$(DATA_TRN) $(DATA_TST) | $(DIR_FEATURE)</span>
+        <span class="err">python</span> <span class="err">./src/generate_$(FEATURE_NAME).py</span> <span class="err">--train-file</span> <span class="err">$&lt;</span> <span class="err">\</span>
+                                             <span class="err">--test-file</span> <span class="err">$(lastword</span> <span class="err">$^)</span> <span class="err">\</span>
+                                             <span class="err">--train-feature-file</span> <span class="err">$(FEATURE_TRN)</span> <span class="err">\</span>
+                                             <span class="err">--test-feature-file</span> <span class="err">$(FEATURE_TST)</span> <span class="err">\</span>
+                                             <span class="err">--feature-map-file</span> <span class="err">$(FEATURE_MAP)</span>
+</code></pre></div></div>
+<p>Feature makefiles include all the parameters from <strong><em><code class="language-plaintext highlighter-rouge">Makefile</code></em></strong>. The parameters defined in <strong><em><code class="language-plaintext highlighter-rouge">Makefile.feature.e1</code></em></strong> are</p>
+
+<p><code class="language-plaintext highlighter-rouge">FEATURE_NAME</code>: specified name of the feature</p>
+
+<p><code class="language-plaintext highlighter-rouge">FEATURE_TRN</code>, <code class="language-plaintext highlighter-rouge">FEATURE_TST</code>: train and test feature files, which are the outputs created by <strong>./src/generate_$(FEATURE_NAME).py</strong>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">FEATURE_MAP</code>: a file where we keep the name of the features, which is also created by <strong>./src/generate_$(FEATURE_NAME).py</strong>.</p>
+
+<h2 id="cross-validation-and-test-predictions">Cross-Validation and Test Predictions</h2>
+<p>The models are defined in makefiles <strong><em><code class="language-plaintext highlighter-rouge">Makefile.$ALGO_NAME</code></em></strong>, e.g., <a href="https://github.com/kaggler-tv/cat-in-the-dat-ii/blob/master/Makefile.logreg1"><strong><em><code class="language-plaintext highlighter-rouge">Makefile.logreg1</code></em></strong></a>. At the top of each model file, we define which feature is going to be included as shown below. Then, we give the algorithm a short name, <code class="language-plaintext highlighter-rouge">ALGO_NAME</code>, for reference. We define the parameters for the algorithm, <code class="language-plaintext highlighter-rouge">C, REGULARIZER, CLASS_WEIGHT</code> and <code class="language-plaintext highlighter-rouge">SOLVER</code> in this case. We also specifiy a model name for reference, <code class="language-plaintext highlighter-rouge">MODEL_NAME</code>. The cross validation for algorithms are run by files <strong>./src/train_predict_$MODEL_NAME.py</strong>, e.g., <strong>./src/train_predict_logreg1.py</strong>, which produce validation and test predictions, <code class="language-plaintext highlighter-rouge">PREDICT_VAL</code> and <code class="language-plaintext highlighter-rouge">PREDICT_TST</code>.</p>
+
+<p>After the cross validation, <strong>./src/evaluate.py</strong> evaluates the validation predictions for a given metric, and writes the score to the file <code class="language-plaintext highlighter-rouge">METRIC_VAL</code>. Finally the submission file, <code class="language-plaintext highlighter-rouge">SUBMISSION_TST</code>, is created using the test predictions.</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">include</span><span class="sx"> Makefile.feature.e1</span>
+
+<span class="nv">ALGO_NAME</span> <span class="o">:=</span> logreg
+<span class="nv">C</span> <span class="o">:=</span> 1.0
+<span class="nv">REGULARIZER</span> <span class="o">:=</span> l2
+<span class="nv">CLASS_WEIGHT</span> <span class="o">:=</span> balanced
+<span class="nv">SOLVER</span> <span class="o">:=</span> lbfgs
+<span class="nv">MODEL_NAME</span> <span class="o">:=</span> <span class="nv">$(FEATURE_NAME)</span>_<span class="nv">$(ALGO_NAME)</span>_<span class="nv">$(REGULARIZER)</span>_<span class="nv">$(C)</span>
+
+<span class="nv">METRIC_VAL</span> <span class="o">:=</span> <span class="nv">$(DIR_METRIC)</span>/<span class="nv">$(MODEL_NAME)</span>.val.txt
+<span class="nv">PREDICT_VAL</span> <span class="o">:=</span> <span class="nv">$(DIR_VAL)</span>/<span class="nv">$(MODEL_NAME)</span>.val.yht
+<span class="nv">PREDICT_TST</span> <span class="o">:=</span> <span class="nv">$(DIR_TST)</span>/<span class="nv">$(MODEL_NAME)</span>.tst.yht
+<span class="nv">SUBMISSION_TST</span> <span class="o">:=</span> <span class="nv">$(DIR_SUB)</span>/<span class="nv">$(MODEL_NAME)</span>_sub.csv
+
+<span class="nl">all</span><span class="o">:</span> <span class="nf">validation submission</span>
+<span class="nl">validation</span><span class="o">:</span> <span class="nf">$(METRIC_VAL)</span>
+<span class="nl">submission</span><span class="o">:</span> <span class="nf">$(SUBMISSION_TST)</span>
+<span class="nl">retrain</span><span class="o">:</span> <span class="nf">clean_$(ALGO_NAME) submission</span>
+
+<span class="nl">submit</span><span class="o">:</span> <span class="nf">$(SUBMISSION_TST)</span>
+        <span class="err">kaggle</span> <span class="err">competitions</span> <span class="err">submit</span> <span class="err">-c</span> <span class="err">$(COMPETITION)</span> <span class="err">-f</span> <span class="err">$&lt;</span> <span class="err">-m</span> <span class="err">$(MODEL_NAME)</span>
+
+<span class="nl">$(PREDICT_TST) $(PREDICT_VAL)</span><span class="o">:</span> <span class="nf">$(FEATURE_TRN) $(FEATURE_TST) | $(DIR_VAL) $(DIR_TST)</span>
+        <span class="err">python</span> <span class="err">./src/train_predict_logreg1.py</span> <span class="err">--train-feature-file</span> <span class="err">$&lt;</span> <span class="err">\</span>
+                                         <span class="err">--test-feature-file</span> <span class="err">$(word</span> <span class="err">2,</span> <span class="err">$^)</span> <span class="err">\</span>
+                                         <span class="err">--predict-valid-file</span> <span class="err">$(PREDICT_VAL)</span> <span class="err">\</span>
+                                         <span class="err">--predict-test-file</span> <span class="err">$(PREDICT_TST)</span> <span class="err">\</span>
+                                         <span class="err">--C</span> <span class="err">$(C)</span> <span class="err">\</span>
+                                         <span class="err">--regularizer</span> <span class="err">$(REGULARIZER)</span> <span class="err">\</span>
+                                         <span class="err">--class_weight</span> <span class="err">$(CLASS_WEIGHT)</span> <span class="err">\</span>
+                                         <span class="err">--solver</span> <span class="err">$(SOLVER)</span> <span class="err">\</span>
+                                         <span class="err">--retrain</span>
+
+<span class="nl">$(METRIC_VAL)</span><span class="o">:</span> <span class="nf">$(PREDICT_VAL) $(Y_TRN) | $(DIR_METRIC)</span>
+        <span class="err">python</span> <span class="err">./src/evaluate.py</span> <span class="err">--predict-file</span> <span class="err">$&lt;</span> <span class="err">\</span>
+                                 <span class="err">--target-file</span> <span class="err">$(lastword</span> <span class="err">$^)</span> <span class="err">&gt;</span> <span class="err">$@</span>
+        <span class="err">cat</span> <span class="err">$@</span>
+
+<span class="nl">$(SUBMISSION_TST)</span><span class="o">:</span> <span class="nf">$(PREDICT_TST) $(HEADER) $(ID_TST) | $(DIR_SUB)</span>
+        <span class="err">paste</span> <span class="err">-d,</span> <span class="err">$(lastword</span> <span class="err">$^)</span> <span class="err">$&lt;</span> <span class="err">&gt;</span> <span class="err">$@.tmp</span>
+        <span class="err">cat</span> <span class="err">$(word</span> <span class="err">2,</span> <span class="err">$^)</span> <span class="err">$@.tmp</span> <span class="err">&gt;</span> <span class="err">$@</span>
+        <span class="err">rm</span> <span class="err">$@.tmp</span>
+
+<span class="nv">.DEFAULT_GOAL</span> <span class="o">:=</span> all
+
+</code></pre></div></div>
+
+<p>If we would like to run the same model with a different feature, e.g., <a href="https://github.com/kaggler-tv/cat-in-the-dat-ii/blob/master/src/generate_j1.py">j1</a>, all we need to do is to change the first line in <strong><em><code class="language-plaintext highlighter-rouge">Makefile.logreg1</code></em></strong> to <code class="language-plaintext highlighter-rouge">include Makefile.feature.j1</code>. The pipeline will automatically create this feature and run cross validation using <strong>./src/train_predict_j1.py</strong>.</p>
+
+<p>Similarly, if we would like to run cross-validation using a different model, such as LightGBM, we need to include the right feature in <a href="https://github.com/kaggler-tv/cat-in-the-dat-ii/blob/master/Makefile.lgb1"><strong><em><code class="language-plaintext highlighter-rouge">Makefile.lgb1</code></em></strong></a>, and run <code class="language-plaintext highlighter-rouge">$make -f Makefile.lgb1</code>. If the train and test features for are already created, they will not be created again.</p>
+
+<h2 id="ensemble">Ensemble</h2>
+<p>After creating several features and model runs, running the ensemble model is similar to running a single model. Ensemble model uses the predictions from single model runs as features. All we need to do is specify which model predictions should be included in the ensemble in <a href="https://github.com/kaggler-tv/cat-in-the-dat-ii/blob/master/Makefile.feature.esb1"><strong><em><code class="language-plaintext highlighter-rouge">Makefile.feature.esb1</code></em></strong></a> as base models. The feature names should be the same as the model names defined in the model makefiles.</p>
+
+<h2 id="submit">Submit</h2>
+<p>Final step is to submit our predictions. Kaggler pipeline allows submitting predictions through CLI. You need to have the following lines in your model makefile, as in <a href="https://github.com/kaggler-tv/cat-in-the-dat-ii/blob/master/Makefile.lgb1"><strong><em><code class="language-plaintext highlighter-rouge">Makefile.lgb1</code></em></strong></a></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>submit: $(SUBMISSION_TST)
+ kaggle competitions submit -c $(COMPETITION) -f $&lt; -m $(MODEL_NAME)
+</code></pre></div></div>
+<p>To make a submission with the predictions from this model and feature, all you need to do is type the following. The submission will inculde <code class="language-plaintext highlighter-rouge">MODEL_NAME</code> as a message for the submission.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$make -f Makefile.lgb1 submit
+</code></pre></div></div>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>We covered the main components of the Kaggler repository. Hopefully, this blog helps you become more comfortable with the Kaggler pipeline. Happy Kaggling :)</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li>
+    <p>Kaggler repository: https://github.com/kaggler-tv/kaggler-template</p>
+  </li>
+  <li>
+    <p>Kaggler-TV Episode 4: https://www.youtube.com/watch?v=861NAO5-XJo&amp;feature=youtu.be</p>
+  </li>
+  <li>
+    <p>Official Kaggle_API: https://github.com/Kaggle/kaggle-api</p>
+  </li>
+  <li>
+    <p>Kaggler template for cat-in-the-dat-ii: https://github.com/kaggler-tv/cat-in-the-dat-ii</p>
+  </li>
+  <li>
+    <p>https://www.kaggle.com/cuijamm/simple-onehot-logisticregression-score-0-80801</p>
+  </li>
+</ol>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:5" role="doc-endnote">
+      <p>https://www.kaggle.com/cuijamm/simple-onehot-logisticregression-score-0-80801 <a href="#fnref:5" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>

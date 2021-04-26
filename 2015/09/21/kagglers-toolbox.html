@@ -1,0 +1,275 @@
+<h1 id="kagglers-toolbox--setup">Kaggler’s Toolbox – Setup</h1>
+
+<p><img src="/images/20150921-kagglers-toolbox.png" alt="" /></p>
+
+<p>I’d like to open up my toolbox that I’ve built for data mining competitions, and share with you.</p>
+
+<p>Let me start with my setup.</p>
+
+<ol id="markdown-toc">
+  <li><a href="#kagglers-toolbox--setup" id="markdown-toc-kagglers-toolbox--setup">Kaggler’s Toolbox – Setup</a></li>
+  <li><a href="#system" id="markdown-toc-system">System</a></li>
+  <li><a href="#git" id="markdown-toc-git">Git</a></li>
+  <li><a href="#s3--dropbox" id="markdown-toc-s3--dropbox">S3 / Dropbox</a></li>
+  <li><a href="#makefile" id="markdown-toc-makefile">Makefile</a></li>
+  <li><a href="#ssh-tunneling" id="markdown-toc-ssh-tunneling">SSH Tunneling</a></li>
+  <li><a href="#tmux" id="markdown-toc-tmux">tmux</a></li>
+</ol>
+
+<h1 id="system">System</h1>
+
+<p>I have access to 2 machines:</p>
+
+<ul>
+  <li><strong>Laptop</strong> – Macbook Pro Retina 15″, OS X Yosemite, i7 2.3GHz 4 Core CPU, 16GB RAM, GeForce GT 750M 2GB, 500GB SSD</li>
+  <li><strong>Desktop</strong> – Ubuntu 14.04, i7 5820K 3.3GHz 6 Core CPU, 64GB RAM, GeForce GT 620 1GB, 120GB SSD + 3TB HDD</li>
+</ul>
+
+<p>I purchased the desktop from eBay around at $2,000 a year ago (September 2014).</p>
+
+<h1 id="git">Git</h1>
+
+<p>As the code repository and version control system, I use git.</p>
+
+<p>It’s useful for collaboration with other team members.  It makes easy to share the code base, keep track of changes and resolve conflicts when two people change the same code.</p>
+
+<p>It’s useful even when I work by myself too.  It helps me reuse and improve the code from previous competitions I participated in before.</p>
+
+<p>For competitions, I use gitlab instead of github because it offers unlimited number of private repositories.</p>
+
+<h1 id="s3--dropbox">S3 / Dropbox</h1>
+
+<p>I use S3 to share files between my machines.  It is cheap – it costs me about $0.1 per month on average.</p>
+
+<p>To access S3, I use AWS CLI.  I also used to use s3cmd and like it.</p>
+
+<p>I use Dropbox to share files between team members.</p>
+
+<h1 id="makefile">Makefile</h1>
+
+<p>For flow control or pipelining, I use <code class="language-plaintext highlighter-rouge">makefiles</code> (or GNU <code class="language-plaintext highlighter-rouge">make</code>).</p>
+
+<p>It modularizes the long process of a data mining competition into feature extraction, single model training, and ensemble model training, and controls workflow between components.</p>
+
+<p>For example, I have a top level makefile that defines the raw data file locations, folder hierarchies, and target variable.</p>
+
+<p><code class="language-plaintext highlighter-rouge">Makefile</code></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># directories
+DIR_DATA := data
+DIR_BUILD := build
+DIR_FEATURE := $(DIR_BUILD)/feature
+DIR_METRIC := $(DIR_BUILD)/metric
+DIR_MODEL := $(DIR_BUILD)/model
+
+# directories for the cross validation and ensembling
+DIR_VAL := $(DIR_BUILD)/val
+DIR_TST := $(DIR_BUILD)/tst
+
+DIRS := $(DIR_DATA) $(DIR_BUILD) $(DIR_FEATURE) $(DIR_METRIC) $(DIR_MODEL) \
+        $(DIR_VAL) $(DIR_TST)
+
+# data files for training and predict
+DATA_TRN := $(DIR_DATA)/train.csv
+DATA_TST := $(DIR_DATA)/test.csv
+SAMPLE_SUBMISSION := $(DIR_DATA)/sample_submission.csv
+
+ID_TST := $(DIR_DATA)/id.tst.csv
+HEADER := $(DIR_DATA)/header.csv
+CV_ID := $(DIR_DATA)/cv_id.txt
+
+Y_TRN:= $(DIR_FEATURE)/y.trn.txt
+Y_TST:= $(DIR_FEATURE)/y.tst.txt
+
+$(DIRS):
+	mkdir -p $@
+
+$(HEADER): $(SAMPLE_SUBMISSION)
+	head -1 $&lt; &gt; $@
+
+$(ID_TST): $(SAMPLE_SUBMISSION)
+	cut -d, -f1 $&lt; | tail -n +2 &gt; $@
+
+$(Y_TST): $(SAMPLE_SUBMISSION) | $(DIR_FEATURE)
+	cut -d, -f2 $&lt; | tail -n +2 &gt; $@
+
+$(Y_TRN) $(CV_ID): $(DATA_TRN) | $(DIR_FEATURE)
+	python src/extract_target_cvid.py --train-file $&lt; \
+                                      --target-file $(Y_TRN) \
+                                      --cvid-file $(CV_ID)
+
+# cleanup
+clean::
+	find . -name '*.pyc' -delete
+
+clobber: clean
+	-rm -rf $(DIR_DATA) $(DIR_BUILD)
+
+.PHONY: clean clobber mac.setup ubuntu.setup apt.setup pip.setup
+</code></pre></div></div>
+
+<p>Then, I have makefiles for features that includes the top level makefile, and defines how to generate training and test feature files in various formats (CSV, libSVM, VW, libFFM, etc.).</p>
+
+<p><code class="language-plaintext highlighter-rouge">Makefile.feature.j3</code></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#--------------------------------------------------------------------------
+# j3: h2 + row id
+#--------------------------------------------------------------------------
+include Makefile
+
+FEATURE_NAME := j3
+
+FEATURE_TRN := $(DIR_FEATURE)/$(FEATURE_NAME).trn.sps
+FEATURE_TST := $(DIR_FEATURE)/$(FEATURE_NAME).tst.sps
+
+$(FEATURE_TRN) $(FEATURE_TST): $(DATA_TRN) $(DATA_TST) | $(DIR_FEATURE)
+	python ./src/generate_$(FEATURE_NAME).py --train-file $&lt; \
+                                             --test-file $(word 2, $^) \
+                                             --train-feature-file $(FEATURE_TRN) \
+                                             --test-feature-file $(FEATURE_TST)
+
+</code></pre></div></div>
+
+<p>Then, I have makefiles for single model training that includes a feature makefile, and defines how to train a single model and produce CV and test predictions.</p>
+
+<p><code class="language-plaintext highlighter-rouge">Makefile.xg</code></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>include Makefile.feature.j3
+
+N = 10000
+DEPTH = 6
+LRATE = 0.05
+SUBCOL = 1
+SUBROW = 0.8
+SUBLEV = 0.5
+WEIGHT = 1
+N_STOP = 100
+ALGO_NAME := xg_$(N)_$(DEPTH)_$(LRATE)_$(SUBCOL)_$(SUBROW)_$(SUBLEV)_$(WEIGHT)_$(N_STOP)
+MODEL_NAME := $(ALGO_NAME)_$(FEATURE_NAME)
+
+METRIC_VAL := $(DIR_METRIC)/$(MODEL_NAME).val.txt
+
+PREDICT_VAL := $(DIR_VAL)/$(MODEL_NAME).val.yht
+PREDICT_TST := $(DIR_TST)/$(MODEL_NAME).tst.yht
+
+SUBMISSION_TST := $(DIR_TST)/$(MODEL_NAME).sub.csv
+SUBMISSION_TST_GZ := $(DIR_TST)/$(MODEL_NAME).sub.csv.gz
+
+all: validation submission
+validation: $(METRIC_VAL)
+submission: $(SUBMISSION_TST)
+retrain: clean_$(ALGO_NAME) submission
+
+$(PREDICT_TST) $(PREDICT_VAL): $(FEATURE_TRN) $(FEATURE_TST) $(CV_ID) \
+                                   | $(DIR_VAL) $(DIR_TST)
+	./src/train_predict_xg.py --train-file $&lt; \
+                              --test-file $(word 2, $^) \
+                              --predict-valid-file $(PREDICT_VAL) \
+                              --predict-test-file $(PREDICT_TST) \
+                              --depth $(DEPTH) \
+                              --lrate $(LRATE) \
+                              --n-est $(N) \
+                              --subcol $(SUBCOL) \
+                              --subrow $(SUBROW) \
+                              --sublev $(SUBLEV) \
+                              --weight $(WEIGHT) \
+                              --early-stop $(N_STOP) \
+                              --cv-id $(lastword $^)
+
+$(SUBMISSION_TST_GZ): $(SUBMISSION_TST)
+	gzip $&lt;
+
+$(SUBMISSION_TST): $(PREDICT_TST) $(HEADER) $(ID_TST) | $(DIR_TST)
+	paste -d, $(lastword $^) $&lt; &gt; $@.tmp
+	cat $(word 2, $^) $@.tmp &gt; $@
+	rm $@.tmp
+
+$(METRIC_VAL): $(PREDICT_VAL) $(Y_TRN) | $(DIR_METRIC)
+	python ./src/evaluate.py --predict-file $&lt; \
+                             --target-file $(word 2, $^) &gt; $@
+	cat $@
+
+
+clean:: clean_$(ALGO_NAME)
+
+clean_$(ALGO_NAME):
+	-rm $(METRIC_VAL) $(PREDICT_VAL) $(PREDICT_TST) $(SUBMISSION_TST)
+	find . -name '*.pyc' -delete
+
+.DEFAULT_GOAL := all
+</code></pre></div></div>
+
+<p>Then, I have makefiles for ensemble features that defines which single model predictions to be included for ensemble training.</p>
+
+<p><code class="language-plaintext highlighter-rouge">Makefile.feature.esb3</code></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>include Makefile
+
+FEATURE_NAME := esb4
+
+BASE_MODELS := xg_10000_6_0.05_1_0.8_0.5_1_100_h2 \
+               xg_10000_6_0.05_1_0.8_0.5_1_100_j3 \
+               keras_100_2_128_0.5_512_5_h2 \
+               keras_100_2_128_0.5_512_5_j3
+
+PREDICTS_TRN := $(foreach m, $(BASE_MODELS), $(DIR_VAL)/$(m).val.yht)
+PREDICTS_TST := $(foreach m, $(BASE_MODELS), $(DIR_TST)/$(m).tst.yht)
+
+FEATURE_TRN := $(DIR_FEATURE)/$(FEATURE_NAME).trn.csv
+FEATURE_TST := $(DIR_FEATURE)/$(FEATURE_NAME).tst.csv
+
+%.sps: %.csv
+	python src/csv_to_sps.py --csv-file $&lt; --sps-file $@
+
+$(FEATURE_TRN): $(Y_TRN) $(PREDICTS_TRN) | $(DIR_FEATURE)
+	paste -d, $^ | tr -d '\r' &gt; $@
+
+$(FEATURE_TST): $(Y_TST) $(PREDICTS_TST) | $(DIR_FEATURE)
+	paste -d, $^ | tr -d '\r' &gt; $@
+
+clean:: clean_$(FEATURE_NAME)
+
+clean_$(FEATURE_NAME):
+	-rm $(FEATURE_TRN) $(FEATURE_TST)
+</code></pre></div></div>
+
+<p>Finally, I can (re)produce the submission from XGBoost ensemble with 9 single models described in <code class="language-plaintext highlighter-rouge">Makefile.feature.esb4</code> by (1) replacing include <code class="language-plaintext highlighter-rouge">Makefile.feature.j3</code> in <code class="language-plaintext highlighter-rouge">Makefile.xg</code> with include <code class="language-plaintext highlighter-rouge">Makefile.feature.esb4</code> and (2) running:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>make <span class="nt">-f</span> Makefile.xg
+</code></pre></div></div>
+
+<h1 id="ssh-tunneling">SSH Tunneling</h1>
+
+<p>When I’m connected to Internet, I always ssh to the desktop for its computational resources (mainly for RAM).</p>
+
+<p>I followed Julian Simioni’s tutorial to allow remote SSH connection to the desktop.  It needs an additional system with a publicly accessible IP address.  You can setup an AWS micro (or free tier) EC2 instance for it.</p>
+
+<h1 id="tmux">tmux</h1>
+
+<p>tmux allows you to keep your SSH sessions even when you get disconnected.  It also let you split/add terminal screens in various ways and switch easily between those.</p>
+
+<p>Documentation might look overwhelming, but all you need are:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># If there is no tmux session:</span>
+<span class="nv">$ </span>tmux
+</code></pre></div></div>
+
+<p>or</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># If you created a tmux session, and want to connect to it:</span>
+<span class="nv">$ </span>tmux attach
+</code></pre></div></div>
+
+<p>Then to create a new pane/window and navigate in between:</p>
+
+<ul>
+  <li>Ctrl + b + “ – to split the current window horizontally.</li>
+  <li>Ctrl + b + % – to split the current window vertically.</li>
+  <li>Ctrl + b + o – to move to next pane in the current window.</li>
+  <li>Ctrl + b + c – to create a new window.</li>
+  <li>Ctrl + b + n – to move to next window.</li>
+</ul>
+
+<p>To close a pane/window, just type exit in the pane/window.</p>
+
+<p>Hope this helps.</p>
+
+<p>Next up is about machine learning tools I use.</p>
+
+<p>Please share your setups and thoughts too. 🙂</p>

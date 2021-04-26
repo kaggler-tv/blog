@@ -1,0 +1,27 @@
+<h1 id="kaggler-050-released">Kaggler 0.5.0 Released</h1>
+
+<p>by Jeong-Yoon Lee</p>
+
+<p>I am glad to announce the release of <a href="https://github.com/jeongyoonlee/Kaggler">Kaggler</a> 0.5.0. Kaggler 0.5.0 has a significant improvement in the performance of the FTRL algorithm thanks to Po-Hsien Chu (<a href="https://github.com/stegben">github</a>, <a href="https://www.kaggle.com/stegben">kaggle</a>, <a href="https://www.linkedin.com/in/benjamin-po-hsien-chu-32622687">linkedin</a>).</p>
+
+<h1 id="results">Results</h1>
+
+<p>We increase the train speed by up to 100 times compare to 0.4.x. Our benchmark shows that one epoch with 1MM records with 8 features takes 1.2 seconds with 0.5.0 compared to 98 seconds with 0.4.x on an i7 CPU.</p>
+
+<h1 id="motivation">Motivation</h1>
+
+<p>The FTRL algorithm has been a popular algorithm since its first appearance on a <a href="http://www.jmlr.org/proceedings/papers/v15/mcmahan11b/mcmahan11b.pdf">paper</a> published by Google. It is suitable for highly sparse data, so it has been widely used for click-through-rate (CTR) prediction in online advertisement. Many Kagglers use FTRL as one of their base algorithms in CTR prediction competitions. Therefore, we want to improve our FTRL implementation and benefit Kagglers who use our package.</p>
+
+<h1 id="methods">Methods</h1>
+
+<p>We profile the code with cProfile and resolve the overheads one by one:</p>
+
+<ul>
+  <li><a href="https://github.com/jeongyoonlee/Kaggler/pull/21">Remove over-heads of Scipy Sparse Matrix row operation</a>: Scipy sparse matrix checks many conditions in <code class="language-plaintext highlighter-rouge">__getitems__</code>, resulting in a lot of function calls. In <code class="language-plaintext highlighter-rouge">fit()</code>, we know that we’re fetching exactly each row, and it is very unlikely to exceed the bound, so we can fetch the indexes of each row in a <a href="https://github.com/jeongyoonlee/Kaggler/pull/21/files#diff-68e5130bfd4c99a2d78351c2749555d9R136">faster way</a>. This enhancement makes our FTRL 10x faster.</li>
+  <li><a href="https://github.com/jeongyoonlee/Kaggler/pull/22">More c-style enhancement</a>: Specify types more clearly, return a whole list instead of yielding feature indexes, etc. These enhancements make our FTRL 5X faster when <code class="language-plaintext highlighter-rouge">interaction==False</code>.</li>
+  <li><a href="https://github.com/jeongyoonlee/Kaggler/pull/28">Faster hash function for interaction features</a>: The last enhancement is to remove the overhead of hashing of interaction features. We use MurMurHash3, which scikit-learn uses, to directly hash the multiplication of feature indexes. This enhancement makes our FTRL 5x faster when <code class="language-plaintext highlighter-rouge">interaction==True</code>.</li>
+</ul>
+
+<h1 id="contributor">Contributor</h1>
+
+<p>Po-Hsien Chu (<a href="https://github.com/stegben">github</a>, <a href="https://www.kaggle.com/stegben">kaggle</a>, <a href="https://www.linkedin.com/in/benjamin-po-hsien-chu-32622687">linkedin</a>)</p>

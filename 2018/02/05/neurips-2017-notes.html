@@ -1,0 +1,363 @@
+<h1 id="neurips-2017-notes">NeurIPS 2017 Notes</h1>
+
+<p>by Hang Li</p>
+
+<p>Jeong and I attended NeurIPS 2017 in December, 2017. Our notes are as follows.</p>
+
+<ol id="markdown-toc">
+  <li><a href="#neurips-2017-notes" id="markdown-toc-neurips-2017-notes">NeurIPS 2017 Notes</a></li>
+  <li><a href="#take-aways-for-professionals" id="markdown-toc-take-aways-for-professionals">Take-Aways for Professionals</a></li>
+  <li><a href="#technical-trends" id="markdown-toc-technical-trends">Technical Trends</a></li>
+  <li><a href="#detailed-session-by-session-notes" id="markdown-toc-detailed-session-by-session-notes">Detailed Session-by-Session Notes</a>    <ol>
+      <li><a href="#on-124-mon" id="markdown-toc-on-124-mon">On 12/4 (Mon)</a>        <ol>
+          <li><a href="#tutorials" id="markdown-toc-tutorials">TUTORIALS</a></li>
+          <li><a href="#opening-remarks-invited-talk" id="markdown-toc-opening-remarks-invited-talk">OPENING REMARKS/ INVITED TALK</a></li>
+          <li><a href="#poster-sessions" id="markdown-toc-poster-sessions">POSTER SESSIONS</a></li>
+        </ol>
+      </li>
+      <li><a href="#on-125-tue" id="markdown-toc-on-125-tue">On 12/5 (Tue)</a>        <ol>
+          <li><a href="#invited-talk" id="markdown-toc-invited-talk">INVITED TALK</a></li>
+          <li><a href="#poster-sessions-1" id="markdown-toc-poster-sessions-1">POSTER SESSIONS</a></li>
+        </ol>
+      </li>
+      <li><a href="#on-126-wed" id="markdown-toc-on-126-wed">On 12/6 (Wed)</a>        <ol>
+          <li><a href="#invited-talk-1" id="markdown-toc-invited-talk-1">INVITED TALK</a></li>
+          <li><a href="#poster-sessions-2" id="markdown-toc-poster-sessions-2">POSTER SESSIONS</a></li>
+        </ol>
+      </li>
+      <li><a href="#on-127-thu" id="markdown-toc-on-127-thu">On 12/7 (Thu)</a>        <ol>
+          <li><a href="#invited-talk-2" id="markdown-toc-invited-talk-2">INVITED TALK</a></li>
+          <li><a href="#symposium--interpretable-ml" id="markdown-toc-symposium--interpretable-ml">SYMPOSIUM – INTERPRETABLE ML</a></li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+  <li><a href="#other-resources" id="markdown-toc-other-resources">Other Resources</a></li>
+</ol>
+
+<h1 id="take-aways-for-professionals">Take-Aways for Professionals</h1>
+
+<p>As shown in the statistics shared by organizers during opening remarks, the majority of NeurIPS papers are from academia. Even papers from industry, which are only a small fraction, are mostly from research organizations. What can professionals take away from this academic conference? In my experience, people from industry can get following benefits from NeurIPS.</p>
+
+<ul>
+  <li><strong>Cutting-edge research</strong>: This might not be applicable in practice immediately, but can still provide important perspectives and directions on each problem.</li>
+  <li><strong>Recruiting</strong>: I would say that 90% of sponsors are focus on hiring. All big companies had their after-parties (a.k.a. recruiting events).</li>
+  <li><strong>Networking</strong>: For some people, this is the most important benefit at NeurIPS. With over 7,000 attendees, NeurIPS 2017 was the largest academic conference in Machine Learning. Everyday I enjoyed conversations with many people in the same field at the poster sessions, after-parties, and even on the way back home with uberpool.</li>
+</ul>
+
+<p><img src="/images/20180205-neurips-2017.jpg" alt="" /></p>
+
+<h1 id="technical-trends">Technical Trends</h1>
+
+<p>We noticed technical trends as follows.</p>
+
+<ul>
+  <li>Meta-learning</li>
+  <li>Interpretability</li>
+  <li>ML systems (or systems for ML)</li>
+  <li>Bayesian modeling</li>
+  <li>Unsupervised learning</li>
+  <li>Probabilistic programming</li>
+</ul>
+
+<p>Below are areas that I would like to investigate further in 2018.</p>
+<ul>
+  <li>Model Interpretation</li>
+  <li>Attention models</li>
+  <li>Online learning</li>
+  <li>Reinforcement learning</li>
+</ul>
+
+<h1 id="detailed-session-by-session-notes">Detailed Session-by-Session Notes</h1>
+
+<p>Below are more detailed notes:</p>
+
+<h2 id="on-124-mon">On 12/4 (Mon)</h2>
+
+<h3 id="tutorials">TUTORIALS</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Comments</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Deep Learning: Practice and Trends</td>
+      <td>Very good summary of deep learning’s current status and trends. CNN, RNN, adversarial networks and unsupervised domain adaptation are closer to actual application. These models should be in professionals’ tool boxes. Meta learning and graph networks are interesting but further away from application.</td>
+    </tr>
+    <tr>
+      <td>Deep Probabilistic Modeling with Gaussian Processes</td>
+      <td>This talk brings an important point. In real world applications, we need to know not only pointwise predictions, but also the level of uncertainty in predictions to support decision making.</td>
+    </tr>
+    <tr>
+      <td>Geometric Deep Learning on Graphs and Manifolds by Michael Bronstein</td>
+      <td>This talk focuses on a interesting trend in deep learning, which uses deep learning on graphs data. In my opinion, there is still a long way to have real applications out of this field.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="opening-remarks-invited-talk">OPENING REMARKS/ INVITED TALK</h3>
+
+<p>| Title | Comments |
+| ————- | ————- |
+| Opening Remarks &amp; Powering the next 100 years | Opening remarks has several interesting statistics of NeurIPS. It shows that NeurIPS is a very academia-centric conference.
+The invited talk, explains the huge amount of energy human need and the limitation of fossil fuel and low-carbon tech.
+Some ideas of how machine learning can help new energy (fusion) next 100 years and have big impact. Including: exploration and inference experiments data. Adding human (domain experts) preferences into ML approach. Mentioned several Bayesian approaches.
+It is about applied machine learning in physics which can impact world a lot.
+Thanks to many open source frameworks, it gets much easier to apply ML to different problem. ML becomes a major tool and will have huge impact across different domains. |</p>
+
+<h3 id="poster-sessions">POSTER SESSIONS</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Comments</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>SvCCa: Singular vector Canonical Correlation analysis for Deep understanding and improvement</td>
+      <td><a href="https://ai.googleblog.com/2017/11/interpreting-deep-neural-networks-with.html">Google’s blog</a> and paper to understand deep learning models. It can be used to improve prediction performance. The key idea is using Singular vector Canonical Correlation (SvCC) to analysis hidden layer parameters.</td>
+    </tr>
+    <tr>
+      <td>Dropoutnet: addressing Cold Start in recommender Systems</td>
+      <td>This focuses only on the item cold start. It need a metadata based vector representative of new items.</td>
+    </tr>
+    <tr>
+      <td>LightGBM: A Highly Efficient Gradient Boosting Decision Tree</td>
+      <td>This paper explains the implementation of LightGBM. It uses different approximate approach from XGBoost’s.</td>
+    </tr>
+    <tr>
+      <td>Discovering Potential Correlations via Hypercontractivity</td>
+      <td>An interesting idea to find potential relationship in the subset of data.</td>
+    </tr>
+    <tr>
+      <td>Other interesting papers</td>
+      <td>Learning Hierarchical Information Flow with Recurrent Neural Modules. Learning ReLUs via Gradient Descent. Clone MCMC: Parallel High-Dimensional Gaussian Gibbs Sampling Efficient Use of Limited-Memory Accelerators for Linear Learning on Heterogeneous Systems</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="on-125-tue">On 12/5 (Tue)</h2>
+
+<h3 id="invited-talk">INVITED TALK</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Comments</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Why AI Will Make it Possible to Reprogram the Human Genome</td>
+      <td>This is one of the most impactful areas of AI/DL. Lately, AI/DL has been used to tackle many challenges in healthcare and shown some promising results.</td>
+    </tr>
+    <tr>
+      <td>Test Of Time Award: Random Features for Large-Scale Kernel Machines</td>
+      <td>This is the spotlight talk of NeurIPS 2017. It stirred a lot of discussions online. I highly recommend that you watch the video. Points from both sides of discussion are valid. Some related discussions: <a href="https://www.reddit.com/r/MachineLearning/comments/7i1uer/n_yann_lecun_response_to_ali_rahimis_nips_lecture/">Yann LeCun’s rebuttal to Ali’s talk Alchemy, Rigour and Engineering</a></td>
+    </tr>
+    <tr>
+      <td>The Trouble with Bias</td>
+      <td>This is a good topic. Data collection and creation process can introduce strong undesirable bias to the data set. ML algorithms can reproduce and even reinforce such bias. This is more than a technical problem.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="poster-sessions-1">POSTER SESSIONS</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Comments</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A Unified Approach to Interpreting Model Predictions</td>
+      <td>Use expectations and Shapley values to interpret model prediction. Unified several previous approaches including LIME. https://github.com/slundberg/shap</td>
+    </tr>
+    <tr>
+      <td>Positive-Unlabeled Learning with Non-Negative Risk Estimator</td>
+      <td>1 class classification is very useful in real world, e.g. click ads, watch content, etc. This paper use a different loss function in PU learning.</td>
+    </tr>
+    <tr>
+      <td>An Applied Algorithmic Foundation for Hierarchical Clustering</td>
+      <td>There are several papers on hierarchical clustering. This is just one of them. Hierarchical clustering is also very useful in real world. In this paper it more focus on the foundation(objective function) of this problem.</td>
+    </tr>
+    <tr>
+      <td>Affinity Clustering: Hierarchical Clustering at Scale</td>
+      <td>Another hierarchical clustering paper. A bottom-up hierarchical clustering. Each time make many merge decisions.</td>
+    </tr>
+    <tr>
+      <td>Mean teachers are better role models: Weight-averaged consistency targets improve semi-supervised deep learning results</td>
+      <td>This is an interesting semi-supervised deep learning approach. I feel it used students to prevent overfitting. Teacher and student improve each other in a virtuous cycle.</td>
+    </tr>
+    <tr>
+      <td>Unbiased estimates for linear regression via volume sampling</td>
+      <td>Choose samples wisely can get similar (not bad) performance w entire data set. This will be useful in the scenarios which is costly to get labels.</td>
+    </tr>
+    <tr>
+      <td>A framework for Multi-A(rmed)/B(andit) Testing with Online FDR Control</td>
+      <td>There are several papers of MAB(Multi-armed bandit), this is one of them. MAB can be very useful in website optimization.</td>
+    </tr>
+    <tr>
+      <td>Other interesting papers</td>
+      <td>Streaming Weak Submodularity: Interpreting Neural Networks on the Fly. Generalization Properties of Learning with Random Features</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="on-126-wed">On 12/6 (Wed)</h2>
+
+<h3 id="invited-talk-1">INVITED TALK</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Comments</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>The Unreasonable Effectiveness of Structure</td>
+      <td>This talk discussed the structure in input and output. Then describe a way to describe “structure” in data. (Probabilistic Soft Logic http://psl.linqs.org/ )</td>
+    </tr>
+    <tr>
+      <td>Deep Learning for Robotics</td>
+      <td>If working in robotics domain, this is a must attend talk. This talk discussed many unsolved pieces to the AI robotics puzzle and how DL (deep reinforcement learning, meta learning, etc ) can help. Some ideas might be useful in other domain.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="poster-sessions-2">POSTER SESSIONS</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Comments</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Clustering with Noisy Queries</td>
+      <td>This paper describe and analysis a way of how to gather answers of a clustering problem. Instead of asking “do element u belong to cluster A” this paper suggest asking “do elements u and v belong to the same cluster?”</td>
+    </tr>
+    <tr>
+      <td>End-to-End Differentiable Proving</td>
+      <td>Very interesting paper which try to combine NN and 1st order logic expert system. Learn vector representation of symbols.</td>
+    </tr>
+    <tr>
+      <td>ELF: An Extensive, Lightweight and Flexible Research Platform for Real-time Strategy Games</td>
+      <td>Looks like a fun place to try AI(:)).</td>
+    </tr>
+    <tr>
+      <td>Attention Is All You Need</td>
+      <td>A new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.</td>
+    </tr>
+    <tr>
+      <td>Simple and Scalable Predictive Uncertainty Estimation using Deep Ensembles</td>
+      <td>Measure the uncertainty is very important. This paper describe a way (simple non-Bayesian baseline) to measure uncertainty.</td>
+    </tr>
+    <tr>
+      <td>Other interesting papers</td>
+      <td>Train longer, generalize better: closing the generalization gap in large batch training of neural networks. Unsupervised Image-to-Image Translation Networks. A simple neural network module for relational reasoning. Style Transfer from Non-parallel Text by Cross-Alignment</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="on-127-thu">On 12/7 (Thu)</h2>
+
+<h3 id="invited-talk-2">INVITED TALK</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Comments</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Learning State Representations</td>
+      <td>This is a very interesting talk. It tried to peel the onions of how human make decision and learn stuff. The researcher also design experiments to prove the hypothesis of “we cluster experiences together into task states based on similarity and learning happens within a cluster, not across cluster borders”. Then try to design model structure to represent this cluster(state).</td>
+    </tr>
+    <tr>
+      <td>On Bayesian Deep Learning and Deep Bayesian Learning</td>
+      <td>This talk is about combine Bayesian Learning and Deep Learning. This topic can be very useful in the future. It also include several projects in this area.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="symposium--interpretable-ml">SYMPOSIUM – INTERPRETABLE ML</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Comments</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>About this symposium</td>
+      <td>I think interpretability is a very important part of models. As be mentioned in one talk of this symposium interpretability is not a purely computational problem and beyond tech. The final goal still be untangle(understand) causal impact, model interpretability can be valuable in at least 2 aspects: debug model predict, help generate hypotheses to do controlled experiment.</td>
+    </tr>
+    <tr>
+      <td>Invited talk - The role of causality for interpretability.</td>
+      <td>This talk discussed how to use causality in model interpretability.</td>
+    </tr>
+    <tr>
+      <td>Invited talk - Interpretable Discovery in Large Image Data Sets</td>
+      <td>This talk present a DEMUD(SVOD-based plus explanations) method to interprete image data sets.</td>
+    </tr>
+    <tr>
+      <td>Poster</td>
+      <td>Detecting Bias in Black-Box Models Using Transparent Model Distillation. The Intriguing Properties of Model Explanations. Feature importance scores and lossless feature pruning using Banzhaf power indices</td>
+    </tr>
+    <tr>
+      <td>Debate about whether or not interpretability is necessary for machine learning</td>
+      <td>Interesting debates about interpretability. Worth to watch.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="other-resources">Other Resources</h1>
+
+<p>NeurIPS videos, slides and notes are available as follows.</p>
+
+<ul>
+  <li><a href="https://papers.nips.cc/book/advances-in-neural-information-processing-systems-30-2017">NeurIPS 2017 Proceedings</a></li>
+  <li><a href="https://deephunt.in/nips-2017-e580ebc9c7b2">Slides</a></li>
+  <li>Videos
+    <ul>
+      <li>https://www.youtube.com/results?search_query=NeurIPS+2017</li>
+      <li>https://nips.cc/Conferences/2017/Videos</li>
+    </ul>
+  </li>
+  <li>Curated Resources
+    <ul>
+      <li>https://github.com/kihosuh/nips_2017</li>
+      <li>https://github.com/hindupuravinash/nips2017</li>
+    </ul>
+  </li>
+  <li>Notes
+    <ul>
+      <li><a href="https://blog.insightdatascience.com/nips-2017-day-1-highlights-6aa124c5a2c7">NeurIPS 2017 – Day 1 Highlights by Emmanuel Ameisen</a></li>
+      <li><a href="https://blog.insightdatascience.com/nips-2017-day-2-highlights-3470aedb048d">NeurIPS 2017 – Day 2 Highlights by Emmanuel Ameisen</a></li>
+      <li><a href="https://blog.insightdatascience.com/nips-2017-day-3-highlights-27864f551678">NeurIPS 2017 – Day 3 Highlights by Emmanuel Ameisen</a></li>
+      <li><a href="http://www.bytemining.com/2017/12/highlights-from-my-first-nips/">Highlights from My First NeurIPS by Ryan Rosario</a></li>
+      <li><a href="https://cs.brown.edu/~dabel/blog/posts/misc/nips_2017.pdf">NeurIPS 2017 Notes by David Abel (pdf)</a></li>
+      <li><a href="https://vkrakovna.wordpress.com/2017/12/30/nips-2017-report/">NeurIPS 2017 Reports by Viktoriya Krakovna</a></li>
+      <li><a href="https://olgalitech.wordpress.com/2017/12/12/nips-2017-notes-and-thoughs/">NeurIPS 2017 notes and thoughts by Olga Liakhovich</a></li>
+    </ul>
+  </li>
+</ul>

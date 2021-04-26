@@ -1,0 +1,27 @@
+<h1 id="keras-backend-benchmark-theano-vs-tensorflow-vs-cntk">Keras Backend Benchmark: Theano vs TensorFlow vs CNTK</h1>
+
+<p>by Jeong-Yoon Lee</p>
+
+<p>Inspired by <a href="http://minimaxir.com/2017/06/keras-cntk/">Max Woolf’s benchmark</a>, the performance of 3 different backends (Theano, TensorFlow, and CNTK) of Keras with 4 different GPUs (K80, M60, Titan X, and 1080 Ti) across various neural network tasks are compared.</p>
+
+<p>For the performance of TensorFlow and CNTK with K80, the numbers reported at <a href="http://minimaxir.com/2017/06/keras-cntk/">Max Woolf’s benchmark</a> are used.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>The accuracies of Theano, TensorFlow and CNTK backends are similar across all benchmark tests, while speeds vary a lot.</p>
+
+<ul>
+  <li><strong>Theano</strong> is significantly (up to 50 times) <strong>slower</strong> than TensorFlow and CNTK.</li>
+  <li>Between TensorFlow and CNTK, <strong>CNTK</strong> is a lot (about 2 to 4 times) <strong>faster</strong> than TensorFlow for <strong>LSTM</strong> (Bidirectional LSTM on IMDb Data and Text Generation via LSTM), while speeds for other type of neural networks are close to each other.</li>
+</ul>
+
+<p>Among K80, M60, Titan X and 1080 Ti GPUs:</p>
+
+<ul>
+  <li><strong>1080 Ti</strong> is the <strong>fastest</strong>.</li>
+  <li><strong>K80</strong> is the <strong>slowest</strong>.</li>
+  <li><strong>M60</strong> is <strong>faster</strong> than K80 and <strong>comparable</strong> to Titan X and 1080 Ti.</li>
+  <li><strong>Theano</strong> is significantly (up to 14 times) <strong>faster</strong> on <strong>1080 Ti</strong> than on Titan X, while the improvements for TensorFlow and CNTK are moderate.</li>
+</ul>
+
+<p>Detailed results are available at https://github.com/szilard/benchm-dl/blob/master/keras_backend.md</p>
