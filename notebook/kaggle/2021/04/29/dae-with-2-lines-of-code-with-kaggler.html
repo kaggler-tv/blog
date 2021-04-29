@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>DAE with 2 Lines of Code with Kaggler | Kaggler TV Blog</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="DAE with 2 Lines of Code with Kaggler" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A tutorial on Kaggler’s new DAE feature transformation" />
+<meta property="og:description" content="A tutorial on Kaggler’s new DAE feature transformation" />
+<link rel="canonical" href="kaggler.com/notebook/kaggle/2021/04/29/dae-with-2-lines-of-code-with-kaggler.html" />
+<meta property="og:url" content="kaggler.com/notebook/kaggle/2021/04/29/dae-with-2-lines-of-code-with-kaggler.html" />
+<meta property="og:site_name" content="Kaggler TV Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-04-29T00:00:00-05:00" />
+<script type="application/ld+json">
+{"url":"kaggler.com/notebook/kaggle/2021/04/29/dae-with-2-lines-of-code-with-kaggler.html","@type":"BlogPosting","headline":"DAE with 2 Lines of Code with Kaggler","dateModified":"2021-04-29T00:00:00-05:00","datePublished":"2021-04-29T00:00:00-05:00","mainEntityOfPage":{"@type":"WebPage","@id":"kaggler.com/notebook/kaggle/2021/04/29/dae-with-2-lines-of-code-with-kaggler.html"},"description":"A tutorial on Kaggler’s new DAE feature transformation","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="kaggler.com/feed.xml" title="Kaggler TV Blog" /><link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.css" integrity="sha512-h7nl+xz8wgDlNM4NqKEM4F1NkIRS17M9+uJwIGwuo8vGqIl4BhuCKdxjWEINm+xyrUjNCnK5dCrhM0sj+wTIXw==" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.js" integrity="sha512-/CMIhXiDA3m2c9kzRyd97MTb3MC6OVnx4TElQ7fkkoRghwDf6gi41gaT1PwF270W6+J60uTmwgeRpNpJdRV6sg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/contrib/auto-render.min.js" integrity="sha512-Do7uJAaHZm5OLrIv/yN4w0iG1dbu01kzdMNnFfu/mAqgUk6Nniv2JYHcwH+cNwjqgLcqcuBBk+JRvprLVI8azg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha512-0doc9hKxR3PYwso42RD1p5ySZpzzuDiOwMrdCEh2WdJZCjcmFKc/wEnL+z8fBQrnHoiNWbo+3fiGkOYXBdQp4A==" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Kaggler TV Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About Kaggler TV</a><a class="page-link" href="/search/">Search</a><a class="page-link" href="/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">DAE with 2 Lines of Code with Kaggler</h1><p class="page-description">A tutorial on Kaggler's new DAE feature transformation</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-04-29T00:00:00-05:00" itemprop="datePublished">
+        Apr 29, 2021
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      3 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/categories/#notebook">notebook</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#kaggle">kaggle</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/kaggler-tv/blog/tree/master/_notebooks/2021-04-29-dae-with-2-lines-of-code-with-kaggler.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/kaggler-tv/blog/master?filepath=_notebooks%2F2021-04-29-dae-with-2-lines-of-code-with-kaggler.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/kaggler-tv/blog/blob/master/_notebooks/2021-04-29-dae-with-2-lines-of-code-with-kaggler.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h1"><a href="#Part-1:-Data-Loading-&-Feature-Engineering">Part 1: Data Loading &amp; Feature Engineering </a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#Label-encoding-with-rare-category-grouping-and-missing-value-imputation">Label encoding with rare category grouping and missing value imputation </a></li>
+<li class="toc-entry toc-h2"><a href="#Target-encoding-with-smoothing-and-5-fold-cross-validation">Target encoding with smoothing and 5-fold cross-validation </a></li>
+<li class="toc-entry toc-h2"><a href="#DAE">DAE </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#Part-2:-Model-Training">Part 2: Model Training </a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#AutoLGB-for-Feature-Selection-and-Hyperparameter-Optimization">AutoLGB for Feature Selection and Hyperparameter Optimization </a></li>
+<li class="toc-entry toc-h2"><a href="#Submission">Submission </a></li>
+</ul>
+</li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-04-29-dae-with-2-lines-of-code-with-kaggler.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This notebook was originally published <a href="https://www.kaggle.com/jeongyoonlee/dae-with-2-lines-of-code-with-kaggler">here</a> at Kaggle.</p>
+<hr>
+<p>Today I released a new version (v0.9.0) of the <code>Kaggler</code> package with Denoising AutoEncoder (DAE) with the swap noise.</p>
+<p>Now you can train a DAE with only 2 lines of code as follows:</p>
+<div class="highlight"><pre><span></span><span class="n">dae</span> <span class="o">=</span> <span class="n">DAE</span><span class="p">(</span><span class="n">cat_cols</span><span class="o">=</span><span class="n">cat_cols</span><span class="p">,</span> <span class="n">num_cols</span><span class="o">=</span><span class="n">num_cols</span><span class="p">,</span> <span class="n">encoding_dim</span><span class="o">=</span><span class="n">encoding_dim</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">dae</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">feature_cols</span><span class="p">])</span>
+</pre></div>
+<p>In addition to the new DAE feature encoder, <code>Kaggler</code> supports many of feature transformations used in Kaggle including:</p>
+<ul>
+<li>
+<code>TargetEncoder</code>: with smoothing and cross-validation to avoid overfitting</li>
+<li><code>FrequencyEncoder</code></li>
+<li>
+<code>LabelEncoder</code>: that imputes missing values and groups rare categories</li>
+<li>
+<code>OneHotEncoder</code>: that imputes missing values and groups rare categories</li>
+<li>
+<code>EmbeddingEncoder</code>: that transforms categorical features into embeddings</li>
+<li>
+<code>QuantileEncoder</code>: that transforms numerical features into quantiles</li>
+</ul>
+<p>In the notebook below, I will show how to use <code>Kaggler</code>'s <code>LabelEncoder</code>, <code>TargetEncoder</code>, and <code>DAE</code> for feature engineering, then use <code>Kaggler</code>'s <code>AutoLGB</code> to do feature selection and hyperparameter optimization.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Part-1:-Data-Loading-&amp;-Feature-Engineering">
+<a class="anchor" href="#Part-1:-Data-Loading-&amp;-Feature-Engineering" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 1: Data Loading &amp; Feature Engineering<a class="anchor-link" href="#Part-1:-Data-Loading-&amp;-Feature-Engineering"> </a>
+</h1>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">lightgbm</span> <span class="k">as</span> <span class="nn">lgb</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">StratifiedKFold</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">roc_auc_score</span><span class="p">,</span> <span class="n">confusion_matrix</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>pip install kaggler
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">kaggler</span>
+<span class="kn">from</span> <span class="nn">kaggler.model</span> <span class="kn">import</span> <span class="n">AutoLGB</span>
+<span class="kn">from</span> <span class="nn">kaggler.preprocessing</span> <span class="kn">import</span> <span class="n">DAE</span><span class="p">,</span> <span class="n">TargetEncoder</span><span class="p">,</span> <span class="n">LabelEncoder</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Kaggler: </span><span class="si">{</span><span class="n">kaggler</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">'ignore'</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">'max_columns'</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">feature_name</span> <span class="o">=</span> <span class="s1">'dae'</span>
+<span class="n">algo_name</span> <span class="o">=</span> <span class="s1">'lgb'</span>
+<span class="n">model_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">algo_name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">feature_name</span><span class="si">}</span><span class="s1">'</span>
+
+<span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">'/kaggle/input/tabular-playground-series-apr-2021/'</span><span class="p">)</span>
+<span class="n">trn_file</span> <span class="o">=</span> <span class="n">data_dir</span> <span class="o">/</span> <span class="s1">'train.csv'</span>
+<span class="n">tst_file</span> <span class="o">=</span> <span class="n">data_dir</span> <span class="o">/</span> <span class="s1">'test.csv'</span>
+<span class="n">sample_file</span> <span class="o">=</span> <span class="n">data_dir</span> <span class="o">/</span> <span class="s1">'sample_submission.csv'</span>
+<span class="n">pseudo_label_file</span> <span class="o">=</span> <span class="s1">'../input/tps-apr-2021-pseudo-label-dae/tps04-sub-006.csv'</span>
+
+<span class="n">feature_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">feature_name</span><span class="si">}</span><span class="s1">.csv'</span>
+<span class="n">predict_val_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">.val.txt'</span>
+<span class="n">predict_tst_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">.tst.txt'</span>
+<span class="n">submission_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">.sub.csv'</span>
+
+<span class="n">target_col</span> <span class="o">=</span> <span class="s1">'Survived'</span>
+<span class="n">id_col</span> <span class="o">=</span> <span class="s1">'PassengerId'</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n_fold</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">seed</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">encoding_dim</span> <span class="o">=</span> <span class="mi">64</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">trn</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">trn_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="n">id_col</span><span class="p">)</span>
+<span class="n">tst</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">tst_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="n">id_col</span><span class="p">)</span>
+<span class="n">sub</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">sample_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="n">id_col</span><span class="p">)</span>
+<span class="n">pseudo_label</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">pseudo_label_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="n">id_col</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">trn</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">tst</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">sub</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">pseudo_label</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tst</span><span class="p">[</span><span class="n">target_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">pseudo_label</span><span class="p">[</span><span class="n">target_col</span><span class="p">]</span>
+<span class="n">n_trn</span> <span class="o">=</span> <span class="n">trn</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">trn</span><span class="p">,</span> <span class="n">tst</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">'Embarked'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'Embarked'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">'No'</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">'Cabin'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'Cabin'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">'_'</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">'CabinType'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'Cabin'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">df</span><span class="o">.</span><span class="n">Ticket</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Ticket</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">'X'</span><span class="p">)</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">'Age'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'Age'</span><span class="p">]</span><span class="o">.</span><span class="n">median</span><span class="p">()),</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">'Age'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'Age'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">round</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="c1"># Fare, fillna with mean value</span>
+<span class="n">fare_map</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">'Fare'</span><span class="p">,</span> <span class="s1">'Pclass'</span><span class="p">]]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">'Pclass'</span><span class="p">)</span><span class="o">.</span><span class="n">median</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">'Fare'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'Fare'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'Pclass'</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">fare_map</span><span class="p">[</span><span class="s1">'Fare'</span><span class="p">]))</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">'FirstName'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'Name'</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">', '</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">'SecondName'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'Name'</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">', '</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">'n'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">gb</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">'FirstName'</span><span class="p">)</span>
+<span class="n">df_names</span> <span class="o">=</span> <span class="n">gb</span><span class="p">[</span><span class="s1">'n'</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">'SameFirstName'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'FirstName'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">df_names</span><span class="p">[</span><span class="n">x</span><span class="p">])</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">gb</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">'SecondName'</span><span class="p">)</span>
+<span class="n">df_names</span> <span class="o">=</span> <span class="n">gb</span><span class="p">[</span><span class="s1">'n'</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">'SameSecondName'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'SecondName'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">df_names</span><span class="p">[</span><span class="n">x</span><span class="p">])</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">'Sex'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'Sex'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'male'</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">'FamilySize'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">SibSp</span> <span class="o">+</span> <span class="n">df</span><span class="o">.</span><span class="n">Parch</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">feature_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Pclass'</span><span class="p">,</span> <span class="s1">'Age'</span><span class="p">,</span><span class="s1">'Embarked'</span><span class="p">,</span><span class="s1">'Parch'</span><span class="p">,</span><span class="s1">'SibSp'</span><span class="p">,</span><span class="s1">'Fare'</span><span class="p">,</span><span class="s1">'CabinType'</span><span class="p">,</span><span class="s1">'Ticket'</span><span class="p">,</span><span class="s1">'SameFirstName'</span><span class="p">,</span> <span class="s1">'SameSecondName'</span><span class="p">,</span> <span class="s1">'Sex'</span><span class="p">,</span>
+                <span class="s1">'FamilySize'</span><span class="p">,</span> <span class="s1">'FirstName'</span><span class="p">,</span> <span class="s1">'SecondName'</span><span class="p">]</span>
+<span class="n">cat_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Pclass'</span><span class="p">,</span><span class="s1">'Embarked'</span><span class="p">,</span><span class="s1">'CabinType'</span><span class="p">,</span><span class="s1">'Ticket'</span><span class="p">,</span> <span class="s1">'FirstName'</span><span class="p">,</span> <span class="s1">'SecondName'</span><span class="p">]</span>
+<span class="n">num_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">feature_cols</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cat_cols</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">feature_cols</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">cat_cols</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">num_cols</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'SameFirstName'</span><span class="p">,</span> <span class="s1">'SameSecondName'</span><span class="p">,</span> <span class="s1">'Fare'</span><span class="p">,</span> <span class="s1">'FamilySize'</span><span class="p">,</span> <span class="s1">'Parch'</span><span class="p">,</span> <span class="s1">'SibSp'</span><span class="p">]:</span>
+    <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+    
+<span class="n">scaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+<span class="n">df</span><span class="p">[</span><span class="n">num_cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">num_cols</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Label-encoding-with-rare-category-grouping-and-missing-value-imputation">
+<a class="anchor" href="#Label-encoding-with-rare-category-grouping-and-missing-value-imputation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Label encoding with rare category grouping and missing value imputation<a class="anchor-link" href="#Label-encoding-with-rare-category-grouping-and-missing-value-imputation"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lbe</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">(</span><span class="n">min_obs</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="n">cat_cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">lbe</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">cat_cols</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Target-encoding-with-smoothing-and-5-fold-cross-validation">
+<a class="anchor" href="#Target-encoding-with-smoothing-and-5-fold-cross-validation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Target encoding with smoothing and 5-fold cross-validation<a class="anchor-link" href="#Target-encoding-with-smoothing-and-5-fold-cross-validation"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cv</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="n">n_fold</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+<span class="n">te</span> <span class="o">=</span> <span class="n">TargetEncoder</span><span class="p">(</span><span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">)</span>
+<span class="n">df_te</span> <span class="o">=</span> <span class="n">te</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">cat_cols</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">target_col</span><span class="p">])</span>
+<span class="n">df_te</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'te_</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">cat_cols</span><span class="p">]</span>
+<span class="n">df_te</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="DAE">
+<a class="anchor" href="#DAE" aria-hidden="true"><span class="octicon octicon-link"></span></a>DAE<a class="anchor-link" href="#DAE"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dae</span> <span class="o">=</span> <span class="n">DAE</span><span class="p">(</span><span class="n">cat_cols</span><span class="o">=</span><span class="n">cat_cols</span><span class="p">,</span> <span class="n">num_cols</span><span class="o">=</span><span class="n">num_cols</span><span class="p">,</span> <span class="n">encoding_dim</span><span class="o">=</span><span class="n">encoding_dim</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">dae</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">feature_cols</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_dae</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">'dae_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">encoding_dim</span><span class="p">)])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df_dae</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Part-2:-Model-Training">
+<a class="anchor" href="#Part-2:-Model-Training" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part 2: Model Training<a class="anchor-link" href="#Part-2:-Model-Training"> </a>
+</h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="AutoLGB-for-Feature-Selection-and-Hyperparameter-Optimization">
+<a class="anchor" href="#AutoLGB-for-Feature-Selection-and-Hyperparameter-Optimization" aria-hidden="true"><span class="octicon octicon-link"></span></a>AutoLGB for Feature Selection and Hyperparameter Optimization<a class="anchor-link" href="#AutoLGB-for-Feature-Selection-and-Hyperparameter-Optimization"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df</span><span class="p">[</span><span class="n">feature_cols</span><span class="p">],</span> <span class="n">df_te</span><span class="p">,</span> <span class="n">df_dae</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">target_col</span><span class="p">]</span>
+<span class="n">X_tst</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">n_trn</span><span class="p">:]</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">p_tst</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">tst</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Training a stacking ensemble LightGBM model:'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">i_trn</span><span class="p">,</span> <span class="n">i_val</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">clf</span> <span class="o">=</span> <span class="n">AutoLGB</span><span class="p">(</span><span class="n">objective</span><span class="o">=</span><span class="s1">'binary'</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">'auc'</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">clf</span><span class="o">.</span><span class="n">tune</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i_trn</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">i_trn</span><span class="p">])</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">features</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">params</span>
+        <span class="n">n_best</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">n_best</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">n_best</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">features</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+    
+    <span class="n">trn_data</span> <span class="o">=</span> <span class="n">lgb</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i_trn</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">i_trn</span><span class="p">])</span>
+    <span class="n">val_data</span> <span class="o">=</span> <span class="n">lgb</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i_val</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">i_val</span><span class="p">])</span>
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">lgb</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">trn_data</span><span class="p">,</span> <span class="n">n_best</span><span class="p">,</span> <span class="n">val_data</span><span class="p">,</span> <span class="n">verbose_eval</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">[</span><span class="n">i_val</span><span class="p">]</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i_val</span><span class="p">])</span>
+    <span class="n">p_tst</span> <span class="o">+=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_tst</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_fold</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'CV #</span><span class="si">{</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s1"> AUC: </span><span class="si">{</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i_val</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="n">i_val</span><span class="p">])</span><span class="si">:</span><span class="s1">.6f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'  CV AUC: </span><span class="si">{</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span><span class="si">:</span><span class="s1">.6f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Test AUC: </span><span class="si">{</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">pseudo_label</span><span class="p">[</span><span class="n">target_col</span><span class="p">],</span> <span class="n">p_tst</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Submission">
+<a class="anchor" href="#Submission" aria-hidden="true"><span class="octicon octicon-link"></span></a>Submission<a class="anchor-link" href="#Submission"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n_pos</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.34911</span> <span class="o">*</span> <span class="n">tst</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">th</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">p_tst</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="n">n_pos</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">th</span><span class="p">)</span>
+<span class="n">confusion_matrix</span><span class="p">(</span><span class="n">pseudo_label</span><span class="p">[</span><span class="n">target_col</span><span class="p">],</span> <span class="p">(</span><span class="n">p_tst</span> <span class="o">&gt;</span> <span class="n">th</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sub</span><span class="p">[</span><span class="n">target_col</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_tst</span> <span class="o">&gt;</span> <span class="n">th</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">sub</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">submission_file</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If you find it useful, please upvote the notebook and leave your feedback. It will be greatly appreciated!</p>
+<p>Also please check my previous notebooks as well:</p>
+<ul>
+<li>
+<a href="https://www.kaggle.com/jeongyoonlee/autoencoder-pseudo-label-autolgb">AutoEncoder + Pseudo Label + AutoLGB</a>: shows how to build a basic AutoEncoder using Keras, and perform automated feature selection and hyperparameter optimization using Kaggler's AutoLGB.</li>
+<li>
+<a href="https://www.kaggle.com/jeongyoonlee/supervised-emphasized-denoising-autoencoder">Supervised Emphasized Denoising AutoEncoder</a>: shows how to build a more sophiscated version of AutoEncoder, called supervised emphasized Denoising AutoEncoder (DAE), which trains DAE and a classifier simultaneously.</li>
+<li>
+<a href="https://www.kaggle.com/jeongyoonlee/stacking-ensemble">Stacking Ensemble</a>: shows how to perform stacking ensemble.</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="kaggler-tv/blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/notebook/kaggle/2021/04/29/dae-with-2-lines-of-code-with-kaggler.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Made by Kagglers, for Kagglers. Kaggler TV is a YouTube Channel that shares about machine learning competitions and data science career development.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/kaggler-tv" title="kaggler-tv"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/kagglertv" title="kagglertv"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
