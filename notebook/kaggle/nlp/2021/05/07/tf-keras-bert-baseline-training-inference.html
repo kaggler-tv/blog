@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>TF/Keras BERT Baseline (Training/Inference) | Kaggler TV Blog</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="TF/Keras BERT Baseline (Training/Inference)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A tutorial about how to train an NLP model with the huggingface’s pretrained BERT in TF/Keras" />
+<meta property="og:description" content="A tutorial about how to train an NLP model with the huggingface’s pretrained BERT in TF/Keras" />
+<link rel="canonical" href="kaggler.com/notebook/kaggle/nlp/2021/05/07/tf-keras-bert-baseline-training-inference.html" />
+<meta property="og:url" content="kaggler.com/notebook/kaggle/nlp/2021/05/07/tf-keras-bert-baseline-training-inference.html" />
+<meta property="og:site_name" content="Kaggler TV Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-05-07T00:00:00-05:00" />
+<script type="application/ld+json">
+{"url":"kaggler.com/notebook/kaggle/nlp/2021/05/07/tf-keras-bert-baseline-training-inference.html","@type":"BlogPosting","headline":"TF/Keras BERT Baseline (Training/Inference)","dateModified":"2021-05-07T00:00:00-05:00","datePublished":"2021-05-07T00:00:00-05:00","mainEntityOfPage":{"@type":"WebPage","@id":"kaggler.com/notebook/kaggle/nlp/2021/05/07/tf-keras-bert-baseline-training-inference.html"},"description":"A tutorial about how to train an NLP model with the huggingface’s pretrained BERT in TF/Keras","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="kaggler.com/feed.xml" title="Kaggler TV Blog" /><link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.css" integrity="sha512-h7nl+xz8wgDlNM4NqKEM4F1NkIRS17M9+uJwIGwuo8vGqIl4BhuCKdxjWEINm+xyrUjNCnK5dCrhM0sj+wTIXw==" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.js" integrity="sha512-/CMIhXiDA3m2c9kzRyd97MTb3MC6OVnx4TElQ7fkkoRghwDf6gi41gaT1PwF270W6+J60uTmwgeRpNpJdRV6sg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/contrib/auto-render.min.js" integrity="sha512-Do7uJAaHZm5OLrIv/yN4w0iG1dbu01kzdMNnFfu/mAqgUk6Nniv2JYHcwH+cNwjqgLcqcuBBk+JRvprLVI8azg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha512-0doc9hKxR3PYwso42RD1p5ySZpzzuDiOwMrdCEh2WdJZCjcmFKc/wEnL+z8fBQrnHoiNWbo+3fiGkOYXBdQp4A==" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Kaggler TV Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About Kaggler TV</a><a class="page-link" href="/search/">Search</a><a class="page-link" href="/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">TF/Keras BERT Baseline (Training/Inference)</h1><p class="page-description">A tutorial about how to train an NLP model with the huggingface's pretrained BERT in TF/Keras</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-05-07T00:00:00-05:00" itemprop="datePublished">
+        May 7, 2021
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      13 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/categories/#notebook">notebook</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#kaggle">kaggle</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#nlp">nlp</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/kaggler-tv/blog/tree/master/_notebooks/2021-05-07-tf-keras-bert-baseline-training-inference.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/kaggler-tv/blog/master?filepath=_notebooks%2F2021-05-07-tf-keras-bert-baseline-training-inference.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/kaggler-tv/blog/blob/master/_notebooks/2021-05-07-tf-keras-bert-baseline-training-inference.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h1"><a href="#Changelogs">Changelogs </a></li>
+<li class="toc-entry toc-h1"><a href="#Load-Libraries-and-Data">Load Libraries and Data </a></li>
+<li class="toc-entry toc-h1"><a href="#Tokenization-Using-transformers">Tokenization Using transformers </a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#Save-Tokenizer-and-Encoded-Training-Data">Save Tokenizer and Encoded Training Data </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#Model-Training-with-Cross-Validation">Model Training with Cross-Validation </a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#Print-CV-RMSE-and-Save-CV-Predictions">Print CV RMSE and Save CV Predictions </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#Submission">Submission </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-05-07-tf-keras-bert-baseline-training-inference.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This notebook shows how to train a neural network model with pre-trained BERT in Tensorflow/Keras. It is based on @xhlulu's <a href="https://www.kaggle.com/xhlulu/disaster-nlp-keras-bert-using-tfhub">Disaster NLP: Keras BERT using TFHub</a> notebook and <a href="https://keras.io/examples/nlp/text_extraction_with_bert/">Text Extraction with BERT</a> example at Keras.</p>
+<p>This competition is a code competition without access to internet. So we add the <code>transformers</code> tokenizer and pre-trained BERT model through Kaggle Datasets instead.</p>
+<p>Hope it helps.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Changelogs">
+<a class="anchor" href="#Changelogs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Changelogs<a class="anchor-link" href="#Changelogs"> </a>
+</h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>CV Score</th>
+<th>Public Score</th>
+<th>Changes</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v9</td>
+<td>to be updated</td>
+<td>to be updated</td>
+<td>use transformers' tokenizer</td>
+</tr>
+<tr>
+<td>v8</td>
+<td>0.653635</td>
+<td>0.606</td>
+<td>add 5-fold CV + early-stopping back.</td>
+<td></td>
+</tr>
+<tr>
+<td>v7</td>
+<td>N/A</td>
+<td>0.617</td>
+<td>fix the bug in learning rate scheduler</td>
+<td>overfitting to train? (n=20)</td>
+</tr>
+<tr>
+<td>v6</td>
+<td>N/A</td>
+<td>0.566</td>
+<td>add the warm-up learning rate scheduler</td>
+<td><strong>With a bug. Don't use it</strong></td>
+</tr>
+<tr>
+<td>v5</td>
+<td>N/A</td>
+<td>0.531</td>
+<td>roll back to v3</td>
+<td></td>
+</tr>
+<tr>
+<td>v4</td>
+<td>N/A</td>
+<td>0.573</td>
+<td>add early-stopping</td>
+<td>seemed to stop too early with <code>patience=1</code> (n=5)</td>
+</tr>
+<tr>
+<td>v3</td>
+<td>N/A</td>
+<td><strong>0.530</strong></td>
+<td>initial baseline</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Load-Libraries-and-Data">
+<a class="anchor" href="#Load-Libraries-and-Data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Load Libraries and Data<a class="anchor-link" href="#Load-Libraries-and-Data"> </a>
+</h1>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">reload_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+<span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">import</span> <span class="nn">joblib</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">KFold</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">simplefilter</span>
+
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">Input</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.callbacks</span> <span class="kn">import</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">LearningRateScheduler</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.initializers</span> <span class="kn">import</span> <span class="n">Constant</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">Bidirectional</span><span class="p">,</span> <span class="n">LSTM</span><span class="p">,</span> <span class="n">Dropout</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers.experimental.preprocessing</span> <span class="kn">import</span> <span class="n">TextVectorization</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.metrics</span> <span class="kn">import</span> <span class="n">RootMeanSquaredError</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.utils</span> <span class="kn">import</span> <span class="n">to_categorical</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">TFBertModel</span><span class="p">,</span> <span class="n">BertConfig</span><span class="p">,</span> <span class="n">BertTokenizerFast</span>
+
+<span class="n">simplefilter</span><span class="p">(</span><span class="s1">'ignore'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">'fivethirtyeight'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">gpu</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">list_physical_devices</span><span class="p">(</span><span class="s1">'GPU'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Num GPUs Available: "</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">gpu</span><span class="p">))</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gpu</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">set_memory_growth</span><span class="p">(</span><span class="n">gpu</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Num GPUs Available:  1
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_name</span> <span class="o">=</span> <span class="s1">'bert_v9'</span>
+
+<span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">'../input/commonlitreadabilityprize'</span><span class="p">)</span>
+<span class="n">train_file</span> <span class="o">=</span> <span class="n">data_dir</span> <span class="o">/</span> <span class="s1">'train.csv'</span>
+<span class="n">test_file</span> <span class="o">=</span> <span class="n">data_dir</span> <span class="o">/</span> <span class="s1">'test.csv'</span>
+<span class="n">sample_file</span> <span class="o">=</span> <span class="n">data_dir</span> <span class="o">/</span> <span class="s1">'sample_submission.csv'</span>
+
+<span class="n">build_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">'../build/'</span><span class="p">)</span>
+<span class="n">output_dir</span> <span class="o">=</span> <span class="n">build_dir</span> <span class="o">/</span> <span class="n">model_name</span>
+<span class="n">trn_encoded_file</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'trn.enc.joblib'</span>
+<span class="n">tokenizer_file</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'tokenizer.joblib'</span>
+<span class="n">val_predict_file</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">.val.txt'</span>
+<span class="n">submission_file</span> <span class="o">=</span> <span class="s1">'submission.csv'</span>
+
+<span class="n">module_url</span> <span class="o">=</span> <span class="s2">"../input/bert-en-uncased-l24-h1024-a16"</span>
+
+<span class="n">id_col</span> <span class="o">=</span> <span class="s1">'id'</span>
+<span class="n">target_col</span> <span class="o">=</span> <span class="s1">'target'</span>
+<span class="n">text_col</span> <span class="o">=</span> <span class="s1">'excerpt'</span>
+
+<span class="n">max_len</span> <span class="o">=</span> <span class="mi">205</span>
+<span class="n">n_fold</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">n_est</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">n_stop</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">seed</span> <span class="o">=</span> <span class="mi">42</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">trn</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">train_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="n">id_col</span><span class="p">)</span>
+<span class="n">tst</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">test_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="n">id_col</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">trn</span><span class="p">[</span><span class="n">target_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">trn</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">tst</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">trn</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>(2834, 5) (2834,) (7, 3)
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>url_legal</th>
+      <th>license</th>
+      <th>excerpt</th>
+      <th>target</th>
+      <th>standard_error</th>
+    </tr>
+    <tr>
+      <th>id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>c12129c31</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>When the young people returned to the ballroom...</td>
+      <td>-0.340259</td>
+      <td>0.464009</td>
+    </tr>
+    <tr>
+      <th>85aa80a4c</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>All through dinner time, Mrs. Fayre was somewh...</td>
+      <td>-0.315372</td>
+      <td>0.480805</td>
+    </tr>
+    <tr>
+      <th>b69ac6792</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>As Roger had predicted, the snow departed as q...</td>
+      <td>-0.580118</td>
+      <td>0.476676</td>
+    </tr>
+    <tr>
+      <th>dd1000b26</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>And outside before the palace a great garden w...</td>
+      <td>-1.054013</td>
+      <td>0.450007</td>
+    </tr>
+    <tr>
+      <th>37c1b32fb</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Once upon a time there were Three Bears who li...</td>
+      <td>0.247197</td>
+      <td>0.510845</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Tokenization-Using-transformers">
+<a class="anchor" href="#Tokenization-Using-transformers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tokenization Using <code>transformers</code><a class="anchor-link" href="#Tokenization-Using-transformers"> </a>
+</h1>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_dir</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">"bert_base_uncased/"</span>
+<span class="n">pretrained_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">load_tokenizer</span><span class="p">():</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pretrained_dir</span> <span class="o">/</span> <span class="s1">'vocab.txt'</span><span class="p">):</span>
+        <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">BertTokenizerFast</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">"bert-base-uncased"</span><span class="p">)</span>
+        <span class="n">tokenizer</span><span class="o">.</span><span class="n">save_pretrained</span><span class="p">(</span><span class="n">pretrained_dir</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'loading the saved pretrained tokenizer'</span><span class="p">)</span>
+        <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">BertTokenizerFast</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pretrained_dir</span><span class="p">))</span>
+        
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">BertConfig</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pretrained_dir</span><span class="p">))</span>
+    <span class="n">model_config</span><span class="o">.</span><span class="n">output_hidden_states</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">model_config</span>
+
+<span class="k">def</span> <span class="nf">load_bert</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pretrained_dir</span> <span class="o">/</span> <span class="s1">'tf_model.h5'</span><span class="p">):</span>
+        <span class="n">bert_model</span> <span class="o">=</span> <span class="n">TFBertModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">"bert-base-uncased"</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">bert_model</span><span class="o">.</span><span class="n">save_pretrained</span><span class="p">(</span><span class="n">pretrained_dir</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'loading the saved pretrained model'</span><span class="p">)</span>
+        <span class="n">bert_model</span> <span class="o">=</span> <span class="n">TFBertModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_dir</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bert_model</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">bert_encode</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_len</span><span class="o">=</span><span class="n">max_len</span><span class="p">):</span>
+    <span class="n">input_ids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">token_type_ids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">attention_mask</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">:</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_len</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'max_length'</span><span class="p">,</span>
+                         <span class="n">add_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">input_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">[</span><span class="s1">'input_ids'</span><span class="p">])</span>
+        <span class="n">token_type_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">[</span><span class="s1">'token_type_ids'</span><span class="p">])</span>
+        <span class="n">attention_mask</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">[</span><span class="s1">'attention_mask'</span><span class="p">])</span>
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">input_ids</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">token_type_ids</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">attention_mask</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">bert_config</span> <span class="o">=</span> <span class="n">load_tokenizer</span><span class="p">()</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">bert_encode</span><span class="p">(</span><span class="n">trn</span><span class="p">[</span><span class="n">text_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_len</span><span class="o">=</span><span class="n">max_len</span><span class="p">)</span>
+<span class="n">X_tst</span> <span class="o">=</span> <span class="n">bert_encode</span><span class="p">(</span><span class="n">tst</span><span class="p">[</span><span class="n">text_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_len</span><span class="o">=</span><span class="n">max_len</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">trn</span><span class="p">[</span><span class="n">target_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">X_tst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>loading the saved pretrained tokenizer
+(2834, 205) (7, 205) (2834,)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Save-Tokenizer-and-Encoded-Training-Data">
+<a class="anchor" href="#Save-Tokenizer-and-Encoded-Training-Data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Save Tokenizer and Encoded Training Data<a class="anchor-link" href="#Save-Tokenizer-and-Encoded-Training-Data"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">trn_encoded_file</span><span class="p">)</span>
+<span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">tokenizer_file</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>['../build/bert_v9/tokenizer.joblib']</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Model-Training-with-Cross-Validation">
+<a class="anchor" href="#Model-Training-with-Cross-Validation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Model Training with Cross-Validation<a class="anchor-link" href="#Model-Training-with-Cross-Validation"> </a>
+</h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Simple model with only an output dense layer added to the pre-trained BERT model.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">build_model</span><span class="p">(</span><span class="n">bert_model</span><span class="p">,</span> <span class="n">max_len</span><span class="o">=</span><span class="n">max_len</span><span class="p">):</span>    
+    <span class="n">input_ids</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">max_len</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"input_ids"</span><span class="p">)</span>
+    <span class="n">token_type_ids</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">max_len</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"token_type_ids"</span><span class="p">)</span>
+    <span class="n">attention_mask</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">max_len</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"attention_mask"</span><span class="p">)</span>
+
+    <span class="n">sequence_output</span> <span class="o">=</span> <span class="n">bert_model</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">token_type_ids</span><span class="o">=</span><span class="n">token_type_ids</span><span class="p">,</span> <span class="n">attention_mask</span><span class="o">=</span><span class="n">attention_mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">clf_output</span> <span class="o">=</span> <span class="n">sequence_output</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">clf_output</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)(</span><span class="n">clf_output</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">'linear'</span><span class="p">)(</span><span class="n">clf_output</span><span class="p">)</span>
+    
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">token_type_ids</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">],</span> <span class="n">outputs</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">),</span> <span class="n">loss</span><span class="o">=</span><span class="s1">'mean_squared_error'</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">RootMeanSquaredError</span><span class="p">()])</span>
+    
+    <span class="k">return</span> <span class="n">model</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Training the model with early stopping and a learning-rate scheduler</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">scheduler</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="n">lr</span><span class="p">,</span> <span class="n">warmup</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">decay_start</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">epoch</span> <span class="o">&lt;=</span> <span class="n">warmup</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">lr</span> <span class="o">/</span> <span class="p">(</span><span class="n">warmup</span> <span class="o">-</span> <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">warmup</span> <span class="o">&lt;</span> <span class="n">epoch</span> <span class="o">&lt;=</span> <span class="n">decay_start</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">lr</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-.</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">ls</span> <span class="o">=</span> <span class="n">LearningRateScheduler</span><span class="p">(</span><span class="n">scheduler</span><span class="p">)</span>
+<span class="n">es</span> <span class="o">=</span> <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="n">n_stop</span><span class="p">,</span> <span class="n">restore_best_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">cv</span> <span class="o">=</span> <span class="n">KFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="n">n_fold</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">p_tst</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">X_tst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">i_trn</span><span class="p">,</span> <span class="n">i_val</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'training CV #</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">:'</span><span class="p">)</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">set_seed</span><span class="p">(</span><span class="n">seed</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">bert_model</span> <span class="o">=</span> <span class="n">load_bert</span><span class="p">(</span><span class="n">bert_config</span><span class="p">)</span>
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">build_model</span><span class="p">(</span><span class="n">bert_model</span><span class="p">,</span> <span class="n">max_len</span><span class="o">=</span><span class="n">max_len</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+
+    <span class="n">history</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">i_trn</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">i_trn</span><span class="p">],</span>
+                      <span class="n">validation_data</span><span class="o">=</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">i_val</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">i_val</span><span class="p">]),</span>
+                      <span class="n">epochs</span><span class="o">=</span><span class="n">n_est</span><span class="p">,</span>
+                      <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                      <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">ls</span><span class="p">])</span>
+    <span class="n">clf</span><span class="o">.</span><span class="n">save_weights</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">_cv</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">.h5'</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">[</span><span class="n">i_val</span><span class="p">]</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">i_val</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">p_tst</span> <span class="o">+=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_tst</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">/</span> <span class="n">n_fold</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>training CV #1:
+loading the saved pretrained model
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>All model checkpoint layers were used when initializing TFBertModel.
+
+All the layers of TFBertModel were initialized from the model checkpoint at ../build/bert_v9/bert_base_uncased.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use TFBertModel for predictions without further training.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+Model: "model_1"
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+input_ids (InputLayer)          [(None, 205)]        0                                            
+__________________________________________________________________________________________________
+attention_mask (InputLayer)     [(None, 205)]        0                                            
+__________________________________________________________________________________________________
+token_type_ids (InputLayer)     [(None, 205)]        0                                            
+__________________________________________________________________________________________________
+tf_bert_model_1 (TFBertModel)   TFBaseModelOutputWit 109482240   input_ids[0][0]                  
+                                                                 attention_mask[0][0]             
+                                                                 token_type_ids[0][0]             
+__________________________________________________________________________________________________
+tf.__operators__.getitem_1 (Sli (None, 768)          0           tf_bert_model_1[0][13]           
+__________________________________________________________________________________________________
+dropout_75 (Dropout)            (None, 768)          0           tf.__operators__.getitem_1[0][0] 
+__________________________________________________________________________________________________
+dense_1 (Dense)                 (None, 1)            769         dropout_75[0][0]                 
+==================================================================================================
+Total params: 109,483,009
+Trainable params: 109,483,009
+Non-trainable params: 0
+__________________________________________________________________________________________________
+None
+Epoch 1/2
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+WARNING:tensorflow:Gradients do not exist for variables ['tf_bert_model_1/bert/pooler/dense/kernel:0', 'tf_bert_model_1/bert/pooler/dense/bias:0'] when minimizing the loss.
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+WARNING:tensorflow:Gradients do not exist for variables ['tf_bert_model_1/bert/pooler/dense/kernel:0', 'tf_bert_model_1/bert/pooler/dense/bias:0'] when minimizing the loss.
+284/284 [==============================] - ETA: 0s - loss: 1.0671WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+284/284 [==============================] - 118s 366ms/step - loss: 1.0662 - val_loss: 0.4776
+Epoch 2/2
+284/284 [==============================] - 104s 367ms/step - loss: 0.5244 - val_loss: 0.4544
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+training CV #2:
+loading the saved pretrained model
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>All model checkpoint layers were used when initializing TFBertModel.
+
+All the layers of TFBertModel were initialized from the model checkpoint at ../build/bert_v9/bert_base_uncased.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use TFBertModel for predictions without further training.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+Epoch 1/2
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+WARNING:tensorflow:Gradients do not exist for variables ['tf_bert_model_2/bert/pooler/dense/kernel:0', 'tf_bert_model_2/bert/pooler/dense/bias:0'] when minimizing the loss.
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+WARNING:tensorflow:Gradients do not exist for variables ['tf_bert_model_2/bert/pooler/dense/kernel:0', 'tf_bert_model_2/bert/pooler/dense/bias:0'] when minimizing the loss.
+284/284 [==============================] - ETA: 0s - loss: 1.0675WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+284/284 [==============================] - 117s 365ms/step - loss: 1.0667 - val_loss: 0.5301
+Epoch 2/2
+284/284 [==============================] - 101s 356ms/step - loss: 0.5712 - val_loss: 0.4714
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+training CV #3:
+loading the saved pretrained model
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>All model checkpoint layers were used when initializing TFBertModel.
+
+All the layers of TFBertModel were initialized from the model checkpoint at ../build/bert_v9/bert_base_uncased.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use TFBertModel for predictions without further training.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+Epoch 1/2
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+WARNING:tensorflow:Gradients do not exist for variables ['tf_bert_model_3/bert/pooler/dense/kernel:0', 'tf_bert_model_3/bert/pooler/dense/bias:0'] when minimizing the loss.
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+WARNING:tensorflow:Gradients do not exist for variables ['tf_bert_model_3/bert/pooler/dense/kernel:0', 'tf_bert_model_3/bert/pooler/dense/bias:0'] when minimizing the loss.
+284/284 [==============================] - ETA: 0s - loss: 0.9928WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+284/284 [==============================] - 118s 365ms/step - loss: 0.9922 - val_loss: 0.5096
+Epoch 2/2
+284/284 [==============================] - 102s 358ms/step - loss: 0.5822 - val_loss: 0.5252
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+training CV #4:
+loading the saved pretrained model
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>All model checkpoint layers were used when initializing TFBertModel.
+
+All the layers of TFBertModel were initialized from the model checkpoint at ../build/bert_v9/bert_base_uncased.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use TFBertModel for predictions without further training.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+Epoch 1/2
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+WARNING:tensorflow:Gradients do not exist for variables ['tf_bert_model_4/bert/pooler/dense/kernel:0', 'tf_bert_model_4/bert/pooler/dense/bias:0'] when minimizing the loss.
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+WARNING:tensorflow:Gradients do not exist for variables ['tf_bert_model_4/bert/pooler/dense/kernel:0', 'tf_bert_model_4/bert/pooler/dense/bias:0'] when minimizing the loss.
+284/284 [==============================] - ETA: 0s - loss: 1.0345WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+284/284 [==============================] - 120s 375ms/step - loss: 1.0337 - val_loss: 0.5380
+Epoch 2/2
+284/284 [==============================] - 102s 358ms/step - loss: 0.5264 - val_loss: 0.4960
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+training CV #5:
+loading the saved pretrained model
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>All model checkpoint layers were used when initializing TFBertModel.
+
+All the layers of TFBertModel were initialized from the model checkpoint at ../build/bert_v9/bert_base_uncased.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use TFBertModel for predictions without further training.
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+Epoch 1/2
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+WARNING:tensorflow:Gradients do not exist for variables ['tf_bert_model_5/bert/pooler/dense/kernel:0', 'tf_bert_model_5/bert/pooler/dense/bias:0'] when minimizing the loss.
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+WARNING:tensorflow:Gradients do not exist for variables ['tf_bert_model_5/bert/pooler/dense/kernel:0', 'tf_bert_model_5/bert/pooler/dense/bias:0'] when minimizing the loss.
+284/284 [==============================] - ETA: 0s - loss: 1.0071WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+284/284 [==============================] - 120s 371ms/step - loss: 1.0063 - val_loss: 0.5089
+Epoch 2/2
+284/284 [==============================] - 103s 363ms/step - loss: 0.4906 - val_loss: 0.5032
+WARNING:tensorflow:The parameters `output_attentions`, `output_hidden_states` and `use_cache` cannot be updated when calling a model.They have to be set to True/False in the config object (i.e.: `config=XConfig.from_pretrained('name', output_attentions=True)`).
+WARNING:tensorflow:The parameter `return_dict` cannot be set in graph mode and will always be set to `True`.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Print-CV-RMSE-and-Save-CV-Predictions">
+<a class="anchor" href="#Print-CV-RMSE-and-Save-CV-Predictions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Print CV RMSE and Save CV Predictions<a class="anchor-link" href="#Print-CV-RMSE-and-Save-CV-Predictions"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'CV RMSE: </span><span class="si">{</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">squared</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="si">:</span><span class="s1">.6f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">val_predict_file</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">'</span><span class="si">%.6f</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Submission">
+<a class="anchor" href="#Submission" aria-hidden="true"><span class="octicon octicon-link"></span></a>Submission<a class="anchor-link" href="#Submission"> </a>
+</h1>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sub</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">sample_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="n">id_col</span><span class="p">)</span>
+<span class="n">sub</span><span class="p">[</span><span class="n">target_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_tst</span>
+<span class="n">sub</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">submission_file</span><span class="p">)</span>
+<span class="n">sub</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="kaggler-tv/blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/notebook/kaggle/nlp/2021/05/07/tf-keras-bert-baseline-training-inference.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Made by Kagglers, for Kagglers. Kaggler TV is a YouTube Channel that shares about machine learning competitions and data science career development.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/kaggler-tv" title="kaggler-tv"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/kagglertv" title="kagglertv"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
